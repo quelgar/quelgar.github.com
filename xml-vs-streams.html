@@ -67,6 +67,19 @@
 <p>Not unless you use customised input and output streams, that is. After some searching, I found some classes from Xerces called <a href="http://svn.apache.org/viewvc/xerces/java/trunk/samples/socket/io/WrappedOutputStream.java?revision=447688&amp;amp;view=markup">WrappedOutputStream</a> and <a href="http://svn.apache.org/viewvc/xerces/java/trunk/samples/socket/io/WrappedInputStream.java?revision=447688&amp;amp;view=markup">WrappedInputStream</a> that allowed me to do what I wanted. They actually solve the more general problem of reading data of unknown length without reading too much. I ended up writing my own implementations, but I used the same &#8220;protocol&#8221; as these classes. I can now read and write <span class="caps">XML</span> over streams without having to use a new stream for each&nbsp;document.</p>
     </div><!-- /.entry-content -->
     
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "xml-vs-streams.html";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://wisdom-eludes-me.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+    
 
   </article>
 </section>
@@ -115,6 +128,16 @@
 
 
 
+
+<script type="text/javascript">
+    var disqus_shortname = 'wisdom-eludes-me';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
 
 </body>
 </html>

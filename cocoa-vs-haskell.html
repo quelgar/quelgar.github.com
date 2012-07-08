@@ -88,6 +88,19 @@
 <p>The <span class="caps">GHC</span> installer for Mac installs the bulk of <span class="caps">GHC</span> under &#8220;/Library/Frameworks/<span class="caps">GHC</span>.framework&#8221;, but I don&#8217;t think it actually works as a Mac framework. I could be doing something wrong, but adding it to XCode as a framework didn&#8217;t work (XCode just said it wasn&#8217;t found when I tried to build, from memory). It would be great if <span class="caps">GHC</span> could be made a fully-functional Mac framework, as we would no longer need to manually set include and lib search paths, or explicitly add every Haskell .a file to the project. But to make this useful, I think we&#8217;d need some automated way of building any Cabal package as a framework. I&#8217;m not sure if that&#8217;s&nbsp;feasible.</p>
     </div><!-- /.entry-content -->
     
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "cocoa-vs-haskell.html";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://wisdom-eludes-me.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+    
 
   </article>
 </section>
@@ -136,6 +149,16 @@
 
 
 
+
+<script type="text/javascript">
+    var disqus_shortname = 'wisdom-eludes-me';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
 
 </body>
 </html>

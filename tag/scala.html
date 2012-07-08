@@ -99,7 +99,7 @@
 <p>Just a quick aside on termonology. In casual conversation, you may hear it said that &#8220;Option is a monad&#8221;. But it&#8217;s more accurate to say &#8220;Option <em>has</em> a monad&#8221;. Because many types only have one useful monad associated with them, we tend to think that the type itself is the monad, but that&#8217;s not quite right. This doesn&#8217;t just apply to monads, of course, the same goes for monoids, applicative functors, etc. For example, numeric types have two useful monoids: one for addition and one for&nbsp;multiplication.</p>
 <p>Now consider a Validation type from <a href="http://dl.dropbox.com/u/7810909/docs/applicative-errors-scala/chunk-html/index.html">this Tony Morris tutorial</a>. You can write a useful monad for this type, which implies an applicative functor as well. However, the tutorial is concerned with a <em>second</em> useful applicative functor for Validation. This second applicative is only relevant for the case where the Validation is using a semigroup as its error type (the tutorial explains what a semigroup is), and it allows using the semigroup to accumulate a list of all the validation failures. The classic example of this is validating data entered by a user on a form with several fields. The &#8220;plain&#8221; applicative/monad will only record the first validation failure it finds, whereas the semigroup applicative will record all the&nbsp;failures.</p>
 <p>Now, finally, to my point (I think). This applicative functor that uses semigroup does not have a corresponding monad. Which means that we can&#8217;t use it with Scala&#8217;s <code>for</code> syntax. Hence the desire for a nice syntax for applicative functors. It is most definitely&nbsp;useful.</p>
-<p>Obligatory <a href="http://code.google.com/p/scalaz/">Scalaz</a> reference: those guys have pretty much worked out the best way to do all this stuff in Scala. But I find I learn a lot by experimenting&nbsp;myself.</p>
+<p>Obligatory <a href="http://code.google.com/p/scalaz/">Scalaz</a> reference: those guys have pretty much worked out the best way to do all this stuff in Scala. But I find I learn a lot by experimenting&nbsp;myself.</p><p>There are <a href=".././applying-applicative-functors-in-scala.html#disqus_thread">comments</a>.</p>
                 </article>
                 
             </aside><!-- /#featured -->
@@ -148,7 +148,7 @@ It places no meaning at all on left or right, but 99% of its uses in practice
 involve putting normal, expected values in right, and errors or other
 &#8220;exceptional&#8221; values in left ...</p>
                 <a class="readmore" href=".././a-variation-on-scalas-either-type.html">read more</a>
-                
+                <p>There are <a href=".././a-variation-on-scalas-either-type.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -183,7 +183,7 @@ involve putting normal, expected values in right, and errors or other
                 <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
 <p>Gavin King&#8217;s slides provide a fascinating insight into the ...</p>
                 <a class="readmore" href=".././ceylon-interesting-for-the-wrong-reasons.html">read more</a>
-                
+                <p>There are <a href=".././ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -230,7 +230,7 @@ map). A common way to deal with that in Scala is to return an <code>Option</code
 
 <p>What ...</p>
                 <a class="readmore" href=".././scalas-missing-monad.html">read more</a>
-                
+                <p>There are <a href=".././scalas-missing-monad.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -280,7 +280,7 @@ accepts non-reference values as&nbsp;well.</p>
   <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span><span class="o">](</span><span class="n">ref</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span>
       <span class="k">if</span> <span class="o">(</span><span class="n">ref ...</span></pre></div>
                 <a class="readmore" href=".././some-simple-scala-null-tricks.html">read more</a>
-                
+                <p>There are <a href=".././some-simple-scala-null-tricks.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -344,7 +344,7 @@ accepts non-reference values as&nbsp;well.</p>
         <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">digits</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">5</span><span class="o">)</span> <span class="nc">Stream</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="n">rec</span><span class="o">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">))</span>
     <span class="nc">Stream</span><span class="o">.</span><span class="n">cons</span><span class="o">(</span><span class="n">mult</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">rec ...</span></pre></div>
                 <a class="readmore" href=".././project-euler-problem-8.html">read more</a>
-                
+                <p>There are <a href=".././project-euler-problem-8.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -381,7 +381,7 @@ accepts non-reference values as&nbsp;well.</p>
 <blockquote>
 <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.  Find the sum of all the multiples of 3 or 5 below ...</p></blockquote>
                 <a class="readmore" href=".././project-euler-in-scala.html">read more</a>
-                
+                <p>There are <a href=".././project-euler-in-scala.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -439,6 +439,16 @@ accepts non-reference values as&nbsp;well.</p>
 
 
 
+
+<script type="text/javascript">
+    var disqus_shortname = 'wisdom-eludes-me';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
 
 </body>
 </html>

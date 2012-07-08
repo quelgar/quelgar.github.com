@@ -81,7 +81,7 @@
 <p>But I guess I should mention that the number one technical problem that we simply can&#8217;t solve to our satisfaction in Java - or in any other existing <span class="caps">JVM</span> language - is the problem of defining user interfaces and structured data using a typesafe, hierarchical&nbsp;syntax.</p>
 </blockquote>
 <p>I could very well be missing something, but this would seem like a problem that is right in Scala&#8217;s wheelhouse. Perhaps it may not be solved satisfactorily today, but it could done with far less effort than creating a whole new language (and new standard library, and new tool chain&hellip;). It is depressing to think of what these guys could achieve working with Scala instead of pouring resources into&nbsp;Ceylon.</p>
-<p>You may wonder, &#8220;if you think Scala is so good, then use it and be happy, why worry about Ceylon?&#8221; Well, I worry because I think Ceylon is worse than Scala, but it could win anyway. That actually seems to be the more common outcome in these situations. I would much prefer a world with Scala jobs in demand than one with Ceylon jobs in demand. So, yes, it&#8217;s all about me being selfish. I would say to all Scala fans: don&#8217;t be afraid to be a little selfish and evangelise for the better&nbsp;outcome.</p>
+<p>You may wonder, &#8220;if you think Scala is so good, then use it and be happy, why worry about Ceylon?&#8221; Well, I worry because I think Ceylon is worse than Scala, but it could win anyway. That actually seems to be the more common outcome in these situations. I would much prefer a world with Scala jobs in demand than one with Ceylon jobs in demand. So, yes, it&#8217;s all about me being selfish. I would say to all Scala fans: don&#8217;t be afraid to be a little selfish and evangelise for the better&nbsp;outcome.</p><p>There are <a href=".././ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>
                 </article>
                 
             </aside><!-- /#featured -->
@@ -131,7 +131,7 @@ they had to emulate the mouse as best they could. This may now be&nbsp;reversing
 <p>In the announcement of Mac <span class="caps">OS</span> X Lion, there was great
 emphasis placed on the ...</p>
                 <a class="readmore" href=".././more-thoughts-on-apple-and-java.html">read more</a>
-                
+                <p>There are <a href=".././more-thoughts-on-apple-and-java.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -165,7 +165,7 @@ emphasis placed on the ...</p>
 </footer><!-- /.post-info -->
                 <p>So Apple has quietly announced that it is <a href="http://developer.apple.com/library/mac/#releasenotes/Java/JavaSnowLeopardUpdate3LeopardUpdate8RN/NewandNoteworthy/NewandNoteworthy.html%23//apple_ref/doc/uid/TP40010380-CH4-SW1">deprecating its support for Java on the Mac</a>. The wording was (not uncharacteristically for situations like this) a bit vague on the details of what this means. I think two things are definite: 1) Apple will continue to support Java 6 on Snow Leopard until it reaches end of life; which I think happens when the <span class="caps">OS</span> <em>after</em> Lion is publicly released. 2) Apple will not port Java 7+ to the Mac. The main unresolved question is whether Java 6 will be supported on Lion. My guess is that it will be ...</p>
                 <a class="readmore" href=".././java-and-the-mac.html">read more</a>
-                
+                <p>There are <a href=".././java-and-the-mac.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -211,7 +211,7 @@ emphasis placed on the ...</p>
 
 <p>By adding the <code>if</code> statement around the logging, the expensive string construction is only done if the message is actually going to be used ...</p>
                 <a class="readmore" href=".././logging-vs-string-construction.html">read more</a>
-                
+                <p>There are <a href=".././logging-vs-string-construction.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -245,7 +245,7 @@ emphasis placed on the ...</p>
 </footer><!-- /.post-info -->
                 <p>Ever get the feeling that <span class="caps">XML</span> sometimes makes things harder than they need to be? One of the problems that I and others have run into is that when parsing <span class="caps">XML</span> using <span class="caps">SAX</span> (or, in my case, using <span class="caps">JAXB</span> to unmarshall <span class="caps">XML</span>, which uses <span class="caps">SAX</span> under the hood) from an InputStream, the stream is always closed after the parsing is complete. This is surprising behaviour in Java, because you&#8217;re not supposed to close streams you don&#8217;t own. This can be a problem when <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/07/socket_xml_pitf.html">using network sockets</a> or when you want to write two or more unrelated <span class="caps">XML</span> documents ...</p>
                 <a class="readmore" href=".././xml-vs-streams.html">read more</a>
-                
+                <p>There are <a href=".././xml-vs-streams.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -288,7 +288,7 @@ emphasis placed on the ...</p>
             <span class="n">clone</span><span class="o">.</span><span class="na">inner</span> <span class="o">=</span> <span class="o">(</span><span class="n">Inner</span><span class="o">)</span><span class="n">inner</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span> <span class="c1">// A.</span>
             <span class="c1">// Cloned inner still ...</span></pre></div>
                 <a class="readmore" href=".././javas-clone-mechanism-is-teh-suq.html">read more</a>
-                
+                <p>There are <a href=".././javas-clone-mechanism-is-teh-suq.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -324,7 +324,7 @@ emphasis placed on the ...</p>
 <p>This sucker is thrown whenever you invoke a method via reflection (typically via <code>Method.invoke</code>), and that method throws any sort of exception. So it doesn&#8217;t indicate a problem with the reflection mechanism, it is simply how the reflection mechanism notifies you of exceptions thrown by the method you&nbsp;called.</p>
 <p>Whenever you catch this exception (and you will have to catch it at some level), the first thing you should do is call <code>getCause()</code>. This returns the exception thrown from the method that was invoked via reflection, and that&#8217;s ...</p>
                 <a class="readmore" href=".././handling-invocationtargetexception.html">read more</a>
-                
+                <p>There are <a href=".././handling-invocationtargetexception.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -368,7 +368,7 @@ emphasis placed on the ...</p>
 
 <p>This is usually done because the &#8220;stuff&#8221; throws more than one kind of checked exception, and the code to handle each case is the same. So what&#8217;s wrong with it? The biggest problem is that this not only catches the checked exceptions you&#8217;re interested in, but also all <code>RuntimeException</code>s. The vast majority of <code>RuntimeException</code>s are only thrown from buggy code, and catching them ...</p>
                 <a class="readmore" href=".././how-not-to-catch-exceptions.html">read more</a>
-                
+                <p>There are <a href=".././how-not-to-catch-exceptions.html#disqus_thread">comments</a>.</p>
                 </div><!-- /.entry-content -->
             </article></li>
         
@@ -426,6 +426,16 @@ emphasis placed on the ...</p>
 
 
 
+
+<script type="text/javascript">
+    var disqus_shortname = 'wisdom-eludes-me';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
 
 </body>
 </html>
