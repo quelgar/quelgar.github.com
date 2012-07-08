@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Wisdom Eludes Me - scala</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href=".././theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie.css"/>
+                <script src=".././js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href="../.">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href=".././category/politics.html">politics</a></li>
+                
+                    <li ><a href=".././category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+                
+
+            
+
+        
+        
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href=".././applying-applicative-functors-in-scala.html">Applying Applicative Functors in&nbsp;Scala</a></h1> 
+                    <footer class="post-info">
+        <abbr class="published" title="2011-09-02T00:00:00">
+                Fri 02 September 2011
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info --><p>A chap named ittayd has written a nice <a href="http://www.tikalk.com/incubator/blog/functional-programming-scala-rest-us">gentle tutorial on functional programming in Scala</a>. My only minor complaint is that he calls the applicative functor &#8220;sequential application&#8221; function <code>apply</code>. While this is a logical choice, in Scala <code>apply</code> is used everywhere to implement plain old function application, so it could lead to confusion. I think it&#8217;s better to call it <code>&lt;*&gt;</code>, as in Haskell. Read&nbsp;on.</p>
+<p>I found the tutorial interesting because it talks a bit about applicative functors, and how to give them a nice syntax in Scala. The one thing that has bugged me about applicatives is that using them in Scala always felt clunkier than Haskell. Ittayd comes up with a scheme I like, but says &#8220;we have one difficulty: we can no longer define apply inside Future&#8221;. He uses a standard object-pimping implicit conversion to get around this, and that works fine. However, it <em>is</em> possible to define <code>&lt;*&gt;</code> inside your thing-with-an-applicative-functor, using one of my favourite Scala features: <a href="http://stackoverflow.com/questions/3427345/what-do-and-mean-in-scala-2-8-and-where-are-they-documented/3427759#3427759">generalized type constraints</a>. To continue with ittayd&#8217;s example using <code>Future</code>:</p>
+<div class="codehilite"><pre><span class="k">trait</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+  <span class="err">…</span>
+  <span class="k">def</span> <span class="o">&lt;*&gt;[</span><span class="kt">X</span>, <span class="kt">Y</span><span class="o">](</span><span class="n">x</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">X</span><span class="o">])(</span><span class="k">implicit</span> <span class="n">ev</span><span class="k">:</span> <span class="kt">A</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="o">(</span><span class="kt">X</span> <span class="o">=&gt;</span> <span class="kt">Y</span><span class="o">))</span> <span class="k">=</span>
+  <span class="k">new</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">Y</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">get</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="k">this</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="o">)</span>
+    <span class="k">def</span> <span class="n">isDone</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="k">this</span><span class="o">.</span><span class="n">isDone</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="n">isDone</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>The compiler will only allow <code>&lt;*&gt;</code> to be called on a <code>Future</code> that provides an appropriate function as its&nbsp;value.</p>
+<p>Ittayd bootstraps things simply by lifting the function to be applied into <code>Future</code>, but personally I prefer the Haskell style of using <code>&lt;$&gt;</code>, aka &#8220;map&#8221;. In Scala, <code>&lt;$&gt;</code> is unsuitable for a few reasons, so I picked <code>**:</code>:</p>
+<div class="codehilite"><pre><span class="k">trait</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+  <span class="err">…</span>
+  <span class="k">def</span> <span class="o">**:[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Obviously, this is just the standard <code>map</code> method with a different name, what&#8217;s the point? Well, because the operator ends with a :, it&#8217;s right associative; and because it starts with an *, it has higher precedence than <code>&lt;*&gt;</code>; so you end up&nbsp;with:</p>
+<div class="codehilite"><pre><span class="o">(</span><span class="n">marry</span> <span class="k">_</span><span class="o">).</span><span class="n">curried</span> <span class="o">**:</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">jane</span>
+</pre></div>
+
+
+<p>Or, if you subscribe to the slippery slope theory of gay&nbsp;marriage:</p>
+<div class="codehilite"><pre><span class="o">(</span><span class="n">gayMarry</span> <span class="k">_</span><span class="o">).</span><span class="n">curried</span> <span class="o">**:</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">bob</span> <span class="o">&lt;*&gt;</span> <span class="n">george</span> <span class="o">&lt;*&gt;</span> <span class="n">fido</span> <span class="o">&lt;*&gt;</span> <span class="n">aDonkey</span>
+</pre></div>
+
+
+<p>This is reasonably close to the Haskell&nbsp;idiom:</p>
+<div class="codehilite"><pre><span class="n">gayMarry</span> <span class="o">&lt;</span><span class="n">$</span><span class="o">&gt;</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">bob</span> <span class="o">&lt;*&gt;</span> <span class="n">george</span> <span class="o">&lt;*&gt;</span> <span class="n">fido</span> <span class="o">&lt;*&gt;</span> <span class="n">aDonkey</span>
+</pre></div>
+
+
+<p>You may wonder why obsess over the best way of dealing with applicative functors? After all, most of the applicative functors you see have an associated monad, so we can use Scala&#8217;s nice <code>for</code> syntax. Yes this is true for many useful applicative functors, but not all of&nbsp;them.</p>
+<p>Just a quick aside on termonology. In casual conversation, you may hear it said that &#8220;Option is a monad&#8221;. But it&#8217;s more accurate to say &#8220;Option <em>has</em> a monad&#8221;. Because many types only have one useful monad associated with them, we tend to think that the type itself is the monad, but that&#8217;s not quite right. This doesn&#8217;t just apply to monads, of course, the same goes for monoids, applicative functors, etc. For example, numeric types have two useful monoids: one for addition and one for&nbsp;multiplication.</p>
+<p>Now consider a Validation type from <a href="http://dl.dropbox.com/u/7810909/docs/applicative-errors-scala/chunk-html/index.html">this Tony Morris tutorial</a>. You can write a useful monad for this type, which implies an applicative functor as well. However, the tutorial is concerned with a <em>second</em> useful applicative functor for Validation. This second applicative is only relevant for the case where the Validation is using a semigroup as its error type (the tutorial explains what a semigroup is), and it allows using the semigroup to accumulate a list of all the validation failures. The classic example of this is validating data entered by a user on a form with several fields. The &#8220;plain&#8221; applicative/monad will only record the first validation failure it finds, whereas the semigroup applicative will record all the&nbsp;failures.</p>
+<p>Now, finally, to my point (I think). This applicative functor that uses semigroup does not have a corresponding monad. Which means that we can&#8217;t use it with Scala&#8217;s <code>for</code> syntax. Hence the desire for a nice syntax for applicative functors. It is most definitely&nbsp;useful.</p>
+<p>Obligatory <a href="http://code.google.com/p/scalaz/">Scalaz</a> reference: those guys have pretty much worked out the best way to do all this stuff in Scala. But I find I learn a lot by experimenting&nbsp;myself.</p>
+                </article>
+                
+            </aside><!-- /#featured -->
+            
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+            
+        
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././a-variation-on-scalas-either-type.html" rel="bookmark"
+                           title="Permalink to A Variation on Scala’s Either Type">A Variation on Scala&#8217;s Either&nbsp;Type</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2011-05-03T00:00:00">
+                Tue 03 May 2011
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p>I&#8217;ve been using Scala&#8217;s <code>Either</code> type a bit recently, and found a
+couple of minor annoyances with it. So as a learning exercise I tried to
+make a variation of <code>Either</code>, and this is what I came up with. I also
+wanted to experiment with syntax a little. See what you&nbsp;think.</p>
+<p><code>Either</code> is a disjunctive type with two possible values: a <em>left</em> and a <em>right</em>.
+It places no meaning at all on left or right, but 99% of its uses in practice
+involve putting normal, expected values in right, and errors or other
+&#8220;exceptional&#8221; values in left ...</p>
+                <a class="readmore" href=".././a-variation-on-scalas-either-type.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././ceylon-interesting-for-the-wrong-reasons.html" rel="bookmark"
+                           title="Permalink to Ceylon: Interesting For The Wrong Reasons">Ceylon: Interesting For The Wrong&nbsp;Reasons</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2011-04-15T00:00:00">
+                Fri 15 April 2011
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/ceylon.html">ceylon</a><a href=".././tag/flameage.html">flameage</a><a href=".././tag/java.html">java</a><a href=".././tag/scala.html">scala</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
+<p>Gavin King&#8217;s slides provide a fascinating insight into the ...</p>
+                <a class="readmore" href=".././ceylon-interesting-for-the-wrong-reasons.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././scalas-missing-monad.html" rel="bookmark"
+                           title="Permalink to Scala’s Missing Monad">Scala&#8217;s Missing&nbsp;Monad</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2010-09-30T00:00:00">
+                Thu 30 September 2010
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/scala.html">scala</a><a href=".././tag/haskell.html">haskell</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
+recently. An issue I found myself running into quite often is this: say you
+have a function that sometimes returns no results (e.g. looking up a key in a
+map). A common way to deal with that in Scala is to return an <code>Option</code>:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">foo</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</pre></div>
+
+
+<p>Simple enough. But then a typical use of such a function is to map it over all members of a&nbsp;collection:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">strings</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">foo</span> <span class="k">_</span><span class="o">)</span>
+</pre></div>
+
+
+<p>What ...</p>
+                <a class="readmore" href=".././scalas-missing-monad.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././some-simple-scala-null-tricks.html" rel="bookmark"
+                           title="Permalink to Some Simple Scala Null Tricks">Some Simple Scala Null&nbsp;Tricks</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2009-12-16T00:00:00">
+                Wed 16 December 2009
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/scala.html">scala</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p>Scala code often needs to deal with null references, unfortunately. Such is
+the price of Java interoperability. One of my favourite utility methods&nbsp;is:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="o">?[</span><span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span><span class="o">](</span><span class="n">ref</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">ref</span> <span class="n">eq</span> <span class="kc">null</span><span class="o">)</span> <span class="nc">None</span> <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">ref</span><span class="o">)</span>
+
+<span class="c1">// e.g.</span>
+<span class="k">val</span> <span class="n">value</span> <span class="k">=</span> <span class="o">?(</span><span class="n">javaCallThatMayReturnNull</span><span class="o">()).</span><span class="n">getOrElse</span><span class="o">(</span><span class="n">defaultValue</span><span class="o">)</span>
+</pre></div>
+
+
+<p>Scala 2.8 offers this using <code>Option(ref)</code> instead of
+<code>?(ref)</code>. However, I can&#8217;t figure out why the Scala 2.8 method
+accepts non-reference values as&nbsp;well.</p>
+<p>Another simple thing that may come in handy is an extractor for non-null&nbsp;values:</p>
+<div class="codehilite"><pre><span class="k">object</span> <span class="nc">NotNull</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span><span class="o">](</span><span class="n">ref</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">ref ...</span></pre></div>
+                <a class="readmore" href=".././some-simple-scala-null-tricks.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././project-euler-problem-8.html" rel="bookmark"
+                           title="Permalink to Project Euler Problem 8">Project Euler Problem&nbsp;8</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2009-06-01T23:00:00">
+                Mon 01 June 2009
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a><a href=".././tag/project-euler.html">project euler</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p>I guess I should warn that these Project Euler posts have <strong>spoilers</strong>, in case you want to try the problems yourself ☺. My Scala solution to <a href="http://projecteuler.net/problem=8">problem 8</a>:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">input</span> <span class="k">=</span> <span class="s">&quot;73167176531330624919225119674426574742355349194934&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;96983520312774506326239578318016984801869478851843&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;85861560789112949495459501737958331952853208805511&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;12540698747158523863050715693290963295227443043557&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;66896648950445244523161731856403098711121722383113&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;62229893423380308135336276614282806444486645238749&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;30358907296290491560440772390713810515859307960866&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;70172427121883998797908792274921901699720888093776&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;65727333001053367881220235421809751254540594752243&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;52584907711670556013604839586446706324415722155397&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;53697817977846174064955149290862569321978468622482&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;83972241375657056057490261407972968652414535100474&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;82166370484403199890008895243450658541227588666881&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;16427171479924442928230863465674813919123162824586&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;17866458359124566529476545682848912883142607690042&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;24219022671055626321111109370544217506941658960408&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;07198403850962455444362981230987879927244284909188&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;84580156166097919133875499200524063689912560717606&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;05886116467109405077541002256983155200055935729725&quot;</span> <span class="o">+</span>
+  <span class="s">&quot;71636269561882670428252483600823257530420752963450&quot;</span>
+
+<span class="k">val</span> <span class="n">digits</span> <span class="k">=</span> <span class="n">input</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">asDigit</span><span class="o">).</span><span class="n">toArray</span>
+
+<span class="k">def</span> <span class="n">multiply</span><span class="o">(</span><span class="n">index</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">slice</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">5</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">foldLeft</span><span class="o">(</span><span class="mi">1</span><span class="o">)(</span><span class="k">_</span><span class="o">*</span><span class="k">_</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">multiples</span><span class="k">:</span> <span class="kt">Stream</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">rec</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Stream</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="n">cons</span><span class="o">(</span><span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">),</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">digits</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">5</span><span class="o">)</span> <span class="nc">Stream</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="n">rec</span><span class="o">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">))</span>
+    <span class="nc">Stream</span><span class="o">.</span><span class="n">cons</span><span class="o">(</span><span class="n">mult</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">rec ...</span></pre></div>
+                <a class="readmore" href=".././project-euler-problem-8.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href=".././project-euler-in-scala.html" rel="bookmark"
+                           title="Permalink to Project Euler in Scala">Project Euler in&nbsp;Scala</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2009-06-01T17:19:00">
+                Mon 01 June 2009
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a><a href=".././tag/project-euler.html">project euler</a></p>
+
+
+</footer><!-- /.post-info -->
+                <p><a href="http://projecteuler.net/">Project Euler</a> is a bunch of mathematical/programming problems. I&#8217;ve been trying to improve my <a href="http://www.scala-lang.org/">Scala</a> skills by using it on some of the Euler problems. I&#8217;m trying to use functional programming styles as much as possible. My solutions definitely haven&#8217;t been very optimized, but I am learning, which is the&nbsp;aim.</p>
+<p><strong><a href="http://projecteuler.net/problem=1">Euler Problem&nbsp;1</a></strong></p>
+<blockquote>
+<p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.  Find the sum of all the multiples of 3 or 5 below ...</p></blockquote>
+                <a class="readmore" href=".././project-euler-in-scala.html">read more</a>
+                
+                </div><!-- /.entry-content -->
+            </article></li>
+        
+        
+            </ol><!-- /#posts-list -->
+            
+                
+            
+            </section><!-- /#content -->
+        
+    
+
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

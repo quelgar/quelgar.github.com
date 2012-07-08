@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Wisdom Eludes Me - cocoa</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href=".././theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie.css"/>
+                <script src=".././js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href="../.">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href=".././category/politics.html">politics</a></li>
+                
+                    <li ><a href=".././category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+                
+
+            
+
+        
+        
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href=".././cocoa-vs-haskell.html">Cocoa vs&nbsp;Haskell</a></h1> 
+                    <footer class="post-info">
+        <abbr class="published" title="2010-01-08T00:00:00">
+                Fri 08 January 2010
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href=".././category/programming.html">programming</a>. </p>
+<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/cocoa.html">cocoa</a><a href=".././tag/haskell.html">haskell</a></p>
+
+
+</footer><!-- /.post-info --><p>So here&#8217;s the deal - if you want to write a Mac <span class="caps">GUI</span> app, you want to use the Cocoa framework. As a practical system for writing desktop <span class="caps">GUI</span> apps, the Cocoa stack simply has no equal anywhere. Part of what makes Cocoa so great is the Objective-C language, which adds a very flexible and dynamic <span class="caps">OOP</span> system on top of standard&nbsp;C.</p>
+<p>Objective-C turned out to be a great match for creating desktop GUIs. It&#8217;s obviously a general-purpose language, but for general programming it would be no where near my first choice. My first choice right now would be Haskell, even though I&#8217;m still a beginner and I pretty much suck at it. But I get why Haskell is so good (and so much&nbsp;fun).</p>
+<p>So if I want to write a Mac <span class="caps">GUI</span> app, can I use Haskell? I&#8217;ve had a play with <a href="http://hoc.sourceforge.net/"><span class="caps">HOC</span></a> which is a very neat bit of software that bridges Objective-C to Haskell. You can call Haskell from Objective-C and implement Objective-C classes in Haskell. There are some challenges trying to use <span class="caps">HOC</span> - it&#8217;s not exactly straightforward to get it up and running and integrated into your XCode project; and it&#8217;s under active, but slow, development and doesn&#8217;t have a stable release. But at a more fundamental level I&#8217;ve come to the conclusion that, while it&#8217;s very cool, <span class="caps">HOC</span> probably isn&#8217;t worth&nbsp;it.</p>
+<p>If you can get <span class="caps">HOC</span> working, you&#8217;ll have a full-blown bridge that lets you use Cocoa APIs from Haskell. But is that actually worthwhile? The things that Haskell excels at are basically useless when using Cocoa, which is completely based around stateful objects being mutated by events and messages. While you could have all your code - including the Cocoa <span class="caps">GUI</span> stuff - in Haskell, the <span class="caps">GUI</span> code will all be imperative using the <span class="caps">IO</span> monad. All the effort just gets you Objective-C with nicer&nbsp;syntax.</p>
+<p>So for Mac apps, I think sticking with Objective-C for the <span class="caps">GUI</span> code is the best choice. As a language, it sucks compared to Haskell, but it just works very well with the Cocoa APIs. But what about using Haskell to implement the Model and do other computational heavy-lifting under the hood? This turns out to be much simpler than a full Objective-C bridge. <a href="http://www.haskell.org/ghc/"><span class="caps">GHC</span></a> of course offers a standardised foreign function interface to C out of the box, and Objective-C is a superset of C. So you can call Haskell from Objective-C code just as you would from plain C, and it works quite&nbsp;naturally.</p>
+<p>But it&#8217;s a bit trickier to build a complete Cocoa application that does this. There is a <a href="http://www.haskell.org/haskellwiki/Using_Haskell_in_an_Xcode_Cocoa_project">HaskellWiki page</a> that describes one approach to getting a complete XCode project set up. I tried it out and it works, although things don&#8217;t integrate very well. You have to compile the Haskell code using ghc outside of the XCode build process, and you have to manually track down all the libWhatever.a files that your Haskell code needs to link against. I&#8217;ve made a <a href="http://github.com/quelgar/HaskellCocoaDemo">simple demonstration project for XCode 3.2</a> that works for me on <span class="caps">OS</span> 10.6. This is basically the classic Currency Converter app from Apple&#8217;s Cocoa tutorial, but it does the currency calculation in Haskell. Here&#8217;s the rough list of steps I performed, starting from the standard XCode template for a Cocoa&nbsp;Application:</p>
+<ol>
+<li>In the project build settings:<ol>
+<li>Set the architecture to just &#8220;i386&#8221;. <span class="caps">GHC</span> is today only built for 32-bit Intel on&nbsp;Mac</li>
+<li>Add &#8220;-liconv&#8221; to &#8220;Other Linker Flags&#8221;. <span class="caps">GHC</span> libs need&nbsp;it.</li>
+<li>Add your <span class="caps">GHC</span> include directory to &#8220;Header Search Paths&#8221;. For <span class="caps">GHC</span> 6.12.1 on my system, this was&nbsp;&#8221;/Library/Frameworks/<span class="caps">GHC</span>.framework/Versions/Current/usr/lib/ghc-6.12.1/include/&#8221;.</li>
+<li>Add &#8220;/Library/Frameworks/<span class="caps">GHC</span>.framework/Versions/Current/&#8221; to the &#8220;Library Search Paths&#8221; and mark it recursive. Not sure if this is actually necessary since we end up adding all the libraries to the project manually&nbsp;anyway.</li>
+</ol>
+</li>
+<li>The Haskell function that will be called from C is in &#8220;HaskellConvert.hs&#8221;, which uses the typical <span class="caps">FFI</span> stuff. You compile this with <span class="caps">GHC</span> like so: &#8220;ghc -c HaskellConvert.hs&#8221;. This outputs various files, of which the following have to be added to your XCode project:<ul>
+<li>HaskellConvert.o</li>
+<li>HaskellConvert_stub.o</li>
+</ul>
+</li>
+<li>You now have to add all the lib*.a files from <span class="caps">GHC</span> that your Haskell code needs to link successfully. The wiki page I linked to above describes one way of doing this. It&#8217;s not pretty, but it works. Once you know you need a particular .a file, just drag it from the finder to the project, and accept all the defaults in the add file dialog. It will be added to the link stage&nbsp;automatically.</li>
+<li>Modify main.m to perform the Haskell runtime setup and&nbsp;teardown.</li>
+<li>In this demo, Haskell is called from Converter.m, so this file needs <code>#import "HaskellConvert_stub"</code>, and then just make the call to&nbsp;Haskell.</li>
+</ol>
+<p>Probably the biggest downside of this plain C approach vs <span class="caps">HOC</span> is that you can&#8217;t pass Objective-C objects to Haskell (well, you can, but they are not easy to use from Haskell, to say the least). So you have to convert whatever Objective-C data structures you&#8217;re using in the <span class="caps">GUI</span> to plain C types for interfacing with your Haskell APIs. Haskell wrappers for the <span class="caps">OS</span> X C APIs for CoreFoundation and the Objective-C runtime might make using Objective-C objects from Haskell feasible without a full language bridge, but I&#8217;m not sure about&nbsp;this.</p>
+<p>The <span class="caps">GHC</span> installer for Mac installs the bulk of <span class="caps">GHC</span> under &#8220;/Library/Frameworks/<span class="caps">GHC</span>.framework&#8221;, but I don&#8217;t think it actually works as a Mac framework. I could be doing something wrong, but adding it to XCode as a framework didn&#8217;t work (XCode just said it wasn&#8217;t found when I tried to build, from memory). It would be great if <span class="caps">GHC</span> could be made a fully-functional Mac framework, as we would no longer need to manually set include and lib search paths, or explicitly add every Haskell .a file to the project. But to make this useful, I think we&#8217;d need some automated way of building any Cabal package as a framework. I&#8217;m not sure if that&#8217;s&nbsp;feasible.</p>
+                </article>
+                
+                    
+                
+            </aside><!-- /#featured -->
+            
+        
+        
+        
+            </ol><!-- /#posts-list -->
+            
+            </section><!-- /#content -->
+        
+    
+
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

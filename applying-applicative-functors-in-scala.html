@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Applying Applicative Functors in Scala</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie.css"/>
+                <script src="./js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href="./category/politics.html">politics</a></li>
+                
+                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+        
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="applying-applicative-functors-in-scala.html" rel="bookmark"
+           title="Permalink to Applying Applicative Functors in Scala">Applying Applicative Functors in&nbsp;Scala</a></h1>
+      
+    </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2011-09-02T00:00:00">
+                Fri 02 September 2011
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/scala.html">scala</a><a href="./tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info -->
+      <p>A chap named ittayd has written a nice <a href="http://www.tikalk.com/incubator/blog/functional-programming-scala-rest-us">gentle tutorial on functional programming in Scala</a>. My only minor complaint is that he calls the applicative functor &#8220;sequential application&#8221; function <code>apply</code>. While this is a logical choice, in Scala <code>apply</code> is used everywhere to implement plain old function application, so it could lead to confusion. I think it&#8217;s better to call it <code>&lt;*&gt;</code>, as in Haskell. Read&nbsp;on.</p>
+<p>I found the tutorial interesting because it talks a bit about applicative functors, and how to give them a nice syntax in Scala. The one thing that has bugged me about applicatives is that using them in Scala always felt clunkier than Haskell. Ittayd comes up with a scheme I like, but says &#8220;we have one difficulty: we can no longer define apply inside Future&#8221;. He uses a standard object-pimping implicit conversion to get around this, and that works fine. However, it <em>is</em> possible to define <code>&lt;*&gt;</code> inside your thing-with-an-applicative-functor, using one of my favourite Scala features: <a href="http://stackoverflow.com/questions/3427345/what-do-and-mean-in-scala-2-8-and-where-are-they-documented/3427759#3427759">generalized type constraints</a>. To continue with ittayd&#8217;s example using <code>Future</code>:</p>
+<div class="codehilite"><pre><span class="k">trait</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+  <span class="err">…</span>
+  <span class="k">def</span> <span class="o">&lt;*&gt;[</span><span class="kt">X</span>, <span class="kt">Y</span><span class="o">](</span><span class="n">x</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">X</span><span class="o">])(</span><span class="k">implicit</span> <span class="n">ev</span><span class="k">:</span> <span class="kt">A</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="o">(</span><span class="kt">X</span> <span class="o">=&gt;</span> <span class="kt">Y</span><span class="o">))</span> <span class="k">=</span>
+  <span class="k">new</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">Y</span><span class="o">]</span> <span class="o">{</span>
+    <span class="k">def</span> <span class="n">get</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="k">this</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="o">)</span>
+    <span class="k">def</span> <span class="n">isDone</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="k">this</span><span class="o">.</span><span class="n">isDone</span> <span class="o">&amp;&amp;</span> <span class="n">x</span><span class="o">.</span><span class="n">isDone</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>The compiler will only allow <code>&lt;*&gt;</code> to be called on a <code>Future</code> that provides an appropriate function as its&nbsp;value.</p>
+<p>Ittayd bootstraps things simply by lifting the function to be applied into <code>Future</code>, but personally I prefer the Haskell style of using <code>&lt;$&gt;</code>, aka &#8220;map&#8221;. In Scala, <code>&lt;$&gt;</code> is unsuitable for a few reasons, so I picked <code>**:</code>:</p>
+<div class="codehilite"><pre><span class="k">trait</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="o">{</span>
+  <span class="err">…</span>
+  <span class="k">def</span> <span class="o">**:[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Obviously, this is just the standard <code>map</code> method with a different name, what&#8217;s the point? Well, because the operator ends with a :, it&#8217;s right associative; and because it starts with an *, it has higher precedence than <code>&lt;*&gt;</code>; so you end up&nbsp;with:</p>
+<div class="codehilite"><pre><span class="o">(</span><span class="n">marry</span> <span class="k">_</span><span class="o">).</span><span class="n">curried</span> <span class="o">**:</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">jane</span>
+</pre></div>
+
+
+<p>Or, if you subscribe to the slippery slope theory of gay&nbsp;marriage:</p>
+<div class="codehilite"><pre><span class="o">(</span><span class="n">gayMarry</span> <span class="k">_</span><span class="o">).</span><span class="n">curried</span> <span class="o">**:</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">bob</span> <span class="o">&lt;*&gt;</span> <span class="n">george</span> <span class="o">&lt;*&gt;</span> <span class="n">fido</span> <span class="o">&lt;*&gt;</span> <span class="n">aDonkey</span>
+</pre></div>
+
+
+<p>This is reasonably close to the Haskell&nbsp;idiom:</p>
+<div class="codehilite"><pre><span class="n">gayMarry</span> <span class="o">&lt;</span><span class="n">$</span><span class="o">&gt;</span> <span class="n">joe</span> <span class="o">&lt;*&gt;</span> <span class="n">bob</span> <span class="o">&lt;*&gt;</span> <span class="n">george</span> <span class="o">&lt;*&gt;</span> <span class="n">fido</span> <span class="o">&lt;*&gt;</span> <span class="n">aDonkey</span>
+</pre></div>
+
+
+<p>You may wonder why obsess over the best way of dealing with applicative functors? After all, most of the applicative functors you see have an associated monad, so we can use Scala&#8217;s nice <code>for</code> syntax. Yes this is true for many useful applicative functors, but not all of&nbsp;them.</p>
+<p>Just a quick aside on termonology. In casual conversation, you may hear it said that &#8220;Option is a monad&#8221;. But it&#8217;s more accurate to say &#8220;Option <em>has</em> a monad&#8221;. Because many types only have one useful monad associated with them, we tend to think that the type itself is the monad, but that&#8217;s not quite right. This doesn&#8217;t just apply to monads, of course, the same goes for monoids, applicative functors, etc. For example, numeric types have two useful monoids: one for addition and one for&nbsp;multiplication.</p>
+<p>Now consider a Validation type from <a href="http://dl.dropbox.com/u/7810909/docs/applicative-errors-scala/chunk-html/index.html">this Tony Morris tutorial</a>. You can write a useful monad for this type, which implies an applicative functor as well. However, the tutorial is concerned with a <em>second</em> useful applicative functor for Validation. This second applicative is only relevant for the case where the Validation is using a semigroup as its error type (the tutorial explains what a semigroup is), and it allows using the semigroup to accumulate a list of all the validation failures. The classic example of this is validating data entered by a user on a form with several fields. The &#8220;plain&#8221; applicative/monad will only record the first validation failure it finds, whereas the semigroup applicative will record all the&nbsp;failures.</p>
+<p>Now, finally, to my point (I think). This applicative functor that uses semigroup does not have a corresponding monad. Which means that we can&#8217;t use it with Scala&#8217;s <code>for</code> syntax. Hence the desire for a nice syntax for applicative functors. It is most definitely&nbsp;useful.</p>
+<p>Obligatory <a href="http://code.google.com/p/scalaz/">Scalaz</a> reference: those guys have pretty much worked out the best way to do all this stuff in Scala. But I find I learn a lot by experimenting&nbsp;myself.</p>
+    </div><!-- /.entry-content -->
+    
+
+  </article>
+</section>
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

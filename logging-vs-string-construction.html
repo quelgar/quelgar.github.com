@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Logging vs String Construction</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie.css"/>
+                <script src="./js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href="./category/politics.html">politics</a></li>
+                
+                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+        
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="logging-vs-string-construction.html" rel="bookmark"
+           title="Permalink to Logging vs String Construction">Logging vs String&nbsp;Construction</a></h1>
+      
+    </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2006-10-17T00:00:00">
+                Tue 17 October 2006
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/java.html">java</a><a href="./tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info -->
+      <p>A classic logging problem in Java is&nbsp;this:</p>
+<div class="codehilite"><pre><span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="n">expensiveStringConstruction</span><span class="o">());</span>
+</pre></div>
+
+
+<p>The problem with this is that even when the logger&#8217;s level is above <span class="caps">FINEST</span> and the message is not logged, the message string must still be constructed. In cases where constructing the string involves a lot of work, your code can be slowed down significantly even when logging is off. The standard solution is like&nbsp;so:</p>
+<div class="codehilite"><pre><span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">))</span> <span class="o">{</span>
+  <span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="n">expensiveStringConstruction</span><span class="o">());</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>By adding the <code>if</code> statement around the logging, the expensive string construction is only done if the message is actually going to be used. The problem with this is that if you have a lot of logging statements, your code soon ends up littered with these <code>if</code>s that just obscure what is really happening. Not to mention that you have to type it all&nbsp;in.</p>
+<p>This problem could have been tackled in a different way. It was a mistake for the logging methods to take <code>String</code> objects as parameters. This mandates that the messages <em>must</em> be constructed before passing them to the logger. A better approach is to delay creating the message string until the last possible moment, when we know it will be needed. One option would be to have an interface called, say, <code>LogMessageFactory</code> with a method <code>String createLogMessage()</code> and have the log methods accept the interface instead of <code>String</code>. But a new interface isn&#8217;t necessarily needed, as good old <code>Object</code> already has a <code>toString</code> method. If loggers took <code>Object</code>&#8216;s instead of <code>String</code>&#8216;s, then they could just call <code>toString</code> when logging actually takes&nbsp;place.</p>
+<p>Well, the logging <span class="caps">API</span> actually does let you do this. <code>LogRecord</code> objects can store a message string and an arbitrary set of parameter objects. The standard formatters will use <code>MessageFormat</code> to construct the string that is finally logged. Here&#8217;s an&nbsp;example:</p>
+<div class="codehilite"><pre><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">TestLog</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">TestLog</span> <span class="n">testLog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TestLog</span><span class="o">();</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="n">testLog</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>     <span class="c1">// 1</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">,</span> <span class="s">&quot;{0}&quot;</span><span class="o">,</span> <span class="n">testLog</span><span class="o">);</span>   <span class="c1">// 2</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">// expensive string construction here</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5000L</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">assert</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="s">&quot;Hello, world&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+
+
+<p>If the logger is configured to log at <span class="caps">FINEST</span> or below, the lines marked 1 and 2 behave identically and the message is logged. However, if the logger&#8217;s level is above <span class="caps">FINEST</span>, then line 1 will take 5 seconds to do nothing and line 2 will just check the level and exit, without calling <code>toString</code> at&nbsp;all.</p>
+<p>The advantage of logging this way is that you don&#8217;t have to put all those <code>if</code>s statements in. But there are disadvantages. You can&#8217;t use the convenience logging methods like <code>severe</code> and <code>info</code>, etc. You have to use one of the <code>log</code> methods that accept <code>Object</code> parameters. Unfortunate, but not too&nbsp;egregious.</p>
+<p>The bigger disadvantage is that the string generation has to be inside a <code>toString</code> method. While this can be done inside an anonymous inner class, the syntax for that isn&#8217;t exactly convenient. If you have a bunch of log messages that are generated completely differently, then using anonymous inner classes everywhere will be far worse than just using the <code>if</code> statements. Where it would make sense is if you have a bunch of log statements where the expensive portion of the message creation is the&nbsp;same.</p>
+<p>For example, you could replace&nbsp;this:</p>
+<div class="codehilite"><pre><span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">))</span> <span class="o">{</span>
+   <span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="s">&quot;Stuff happened &quot;</span> <span class="o">+</span> <span class="n">expensiveStringCreation</span><span class="o">());</span>
+<span class="o">}</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">))</span> <span class="o">{</span>
+   <span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="s">&quot;Foo happened &quot;</span> <span class="o">+</span> <span class="n">expensiveStringCreation</span><span class="o">());</span>
+<span class="o">}</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isLoggable</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">))</span> <span class="o">{</span>
+   <span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="s">&quot;Bar happened &quot;</span> <span class="o">+</span> <span class="n">expensiveStringCreation</span><span class="o">());</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>with:</p>
+<div class="codehilite"><pre><span class="kd">final</span> <span class="n">Object</span> <span class="n">msgFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">expensiveStringCreation</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+<span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">,</span> <span class="s">&quot;Stuff happened {0}&quot;</span><span class="o">,</span> <span class="n">msgFactory</span><span class="o">);</span>
+<span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">,</span> <span class="s">&quot;Foo happened {0}&quot;</span><span class="o">,</span> <span class="n">msgFactory</span><span class="o">);</span>
+<span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">Level</span><span class="o">.</span><span class="na"><span class="caps">FINEST</span></span><span class="o">,</span> <span class="s">&quot;Bar happened {0}&quot;</span><span class="o">,</span> <span class="n">msgFactory</span><span class="o">);</span>
+</pre></div>
+
+
+<p>I&#8217;m assuming here that there&#8217;s code in between these log calls that changes the state and hence the string returned by <code>expensiveStringCreation</code>.</p>
+<p>There&#8217;s a lot of talk at the moment about adding closures to Java. Whatever ends up being adopted, this is definitely one of the scenarios it should assist with (although what I&#8217;m describing only requires the most basic capabilities of closures). I&#8217;m a fan of the <a href="http://crazybob.org/2006/10/java-closure-spectrum.html"><span class="caps">CICE</span></a> proposal, although some of the objections raised seem valid. The <span class="caps">CICE</span> proposal requires an interface with a single method, so if we did have the <code>LogMessageFactory</code> interface I proposed above, we could just&nbsp;do:</p>
+<div class="codehilite"><pre><span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="n">LogMessageFactory</span><span class="o">()</span>
+    <span class="o">{</span> <span class="k">return</span> <span class="s">&quot;Stuff happened &quot;</span> <span class="o">+</span> <span class="n">expensiveStringCreation</span><span class="o">();</span> <span class="o">});</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+    
+
+  </article>
+</section>
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

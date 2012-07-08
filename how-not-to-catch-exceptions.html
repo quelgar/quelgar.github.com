@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>How Not to Catch Exceptions</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie.css"/>
+                <script src="./js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href="./category/politics.html">politics</a></li>
+                
+                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+        
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="how-not-to-catch-exceptions.html" rel="bookmark"
+           title="Permalink to How Not to Catch Exceptions">How Not to Catch&nbsp;Exceptions</a></h1>
+      
+    </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2005-12-23T00:00:00">
+                Fri 23 December 2005
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/java.html">java</a><a href="./tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info -->
+      <p>When it comes to bad Java practices, top of my list would have to be catching exceptions like&nbsp;this:</p>
+<div class="codehilite"><pre><span class="k">try</span> <span class="o">{</span>
+   <span class="c1">// stuff - anything really</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+   <span class="c1">// maybe log it if you&#39;re lucky</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>This is usually done because the &#8220;stuff&#8221; throws more than one kind of checked exception, and the code to handle each case is the same. So what&#8217;s wrong with it? The biggest problem is that this not only catches the checked exceptions you&#8217;re interested in, but also all <code>RuntimeException</code>s. The vast majority of <code>RuntimeException</code>s are only thrown from buggy code, and catching them is rarely a good idea. The above catch handles all kinds of exceptions the same way, regardless of whether it was caused by a bug or an ordinary failure that can happen from time to time when a program is running (e.g. a network failure). This only obscures&nbsp;bugs.</p>
+<p>Consider the case where a bug causes a <code>NullPointerException</code> to be thrown - perhaps the most common type of bug in Java. If the catch clause simply logs the exception message (not uncommon), then you have to check the log to have any idea why your app is misbehaving. And if you don&#8217;t log the stack trace (again, not uncommon), you still won&#8217;t have a clue what caused it. A much better option is to simply let <code>RuntimeException</code>s go, which produces a screeching halt in your app and, in most cases, an immediate stack trace dump telling you exactly what happened. The details of what happens when you don&#8217;t catch a <code>RuntimeException</code> at all will vary depending on the environment you&#8217;re running in, but it&#8217;s always safe to do so. For example, servlet containers usually output the stack trace in the <span class="caps">HTTP</span> response when a servlet throws a <code>RuntimeException</code>.</p>
+<p>A good principle of catching exceptions is to only catch the those specific exceptions that you can actually deal with.&nbsp;E.g.</p>
+<div class="codehilite"><pre><span class="k">try</span> <span class="o">{</span>
+   <span class="c1">// stuff that throws AException</span>
+   <span class="c1">// stuff that throws BException</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">AException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// deal</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">BException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// deal</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>This way just deals with the exceptions that you can sensibly recover from and lets any <code>RuntimeException</code>s that indicate bugs to be thrown to the caller. If the code to handle both <code>AException</code> and <code>BException</code> is the same, you could always move it to a&nbsp;method.</p>
+<p><span class="dquo">&#8220;</span>But what if the code throws, like, 10 different kinds of checked exceptions?&#8221;. I&#8217;ve found it&#8217;s actually pretty rare to have a block of code that throws more than about 4 unrelated checked exceptions. Some of the reflection APIs are pretty bad with this, however. It can be a pain to enter basically identical catch clauses for every one. A good alternative&nbsp;is:</p>
+<div class="codehilite"><pre><span class="k">try</span> <span class="o">{</span>
+   <span class="c1">// stuff that throws AException</span>
+   <span class="c1">// stuff that throws BException</span>
+   <span class="c1">// stuff that throws CException</span>
+   <span class="c1">// stuff that throws DException</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">RuntimeException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">throw</span> <span class="n">e</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="kd">final</span> <span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+   <span class="c1">// deal with all checked exceptions in the same way</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>This is actually not a bad way to get the best of both worlds (although I usually find it clearer to just handle each checked exception&nbsp;individually).</p>
+<p>I think in hindsight, the inheritance hierarchy of exceptions is backwards. Instead of the <code>RuntimeException</code> extends <code>Exception</code> extends <code>Throwable</code> hierarchy, it should have been <code>CheckedException</code> extends <code>UncheckedException</code> extends <code>Throwable</code>. That would allow catching all checked exceptions in a single catch clause, while not obscuring unchecked exceptions thrown by buggy&nbsp;code.</p>
+<p>In a similar vein, you almost never want to declare a method with <code>throws Exception</code>. This is basically throwing away the whole checked exception system and saying &#8220;this method can throw any kind of exception&#8221;. This tends to make exception handling in the caller painful, and may give the caller no good option but to declare <code>throws Exception</code> itself. Before long, you end up with all your methods declared as throwing <code>Exception</code> and you have little indication of what exceptions you might actually have to deal with at runtime. (There is an argument to made that checked exceptions are a bad idea altogether, but that subject will have to wait for another&nbsp;day.)</p>
+<p>There are a few cases where you might have a legitimate reason to catch <code>Exception</code>, or <code>Error</code>, or <code>Throwable</code>. Here are some of&nbsp;them:</p>
+<ul>
+<li>When implementing <code>Runnable</code>. Reporting <code>RuntimeException</code>s thrown from <code>Runnable.run</code> is a bit of a pain in Java versions 1.4 and earlier. It&#8217;s often easier just to catch them yourself and log the entire stack trace somewhere it can&#8217;t be missed. Java 5 has a nicer mechanism for doing this,&nbsp;however.</li>
+<li>When calling some sort of plug-in module. In this case, a bug in the plug-in doesn&#8217;t mean the whole application needs to abort. You can catch the exception, notify the user, unload the plug-in and move&nbsp;on.</li>
+<li>When dealing with poorly designed APIs that throw <code>Exception</code>.</li>
+</ul>
+    </div><!-- /.entry-content -->
+    
+
+  </article>
+</section>
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

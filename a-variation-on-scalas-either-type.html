@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>A Variation on Scala’s Either Type</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie.css"/>
+                <script src="./js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href="./category/politics.html">politics</a></li>
+                
+                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+        
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="a-variation-on-scalas-either-type.html" rel="bookmark"
+           title="Permalink to A Variation on Scala’s Either Type">A Variation on Scala&#8217;s Either&nbsp;Type</a></h1>
+      
+    </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2011-05-03T00:00:00">
+                Tue 03 May 2011
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/scala.html">scala</a><a href="./tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info -->
+      <p>I&#8217;ve been using Scala&#8217;s <code>Either</code> type a bit recently, and found a
+couple of minor annoyances with it. So as a learning exercise I tried to
+make a variation of <code>Either</code>, and this is what I came up with. I also
+wanted to experiment with syntax a little. See what you&nbsp;think.</p>
+<p><code>Either</code> is a disjunctive type with two possible values: a <em>left</em> and a <em>right</em>.
+It places no meaning at all on left or right, but 99% of its uses in practice
+involve putting normal, expected values in right, and errors or other
+&#8220;exceptional&#8221; values in left. This means that almost all the time you
+end up getting the <code>RightProjection</code>,&nbsp;e.g.:</p>
+<div class="codehilite"><pre><span class="k">for</span> <span class="o">{</span>
+    <span class="n">v1</span> <span class="k">&lt;-</span> <span class="n">foo</span><span class="o">(</span><span class="err">…</span><span class="o">).</span><span class="n">right</span>
+    <span class="n">v2</span> <span class="k">&lt;-</span> <span class="n">bar</span><span class="o">(</span><span class="err">…</span><span class="o">).</span><span class="n">right</span>
+    <span class="n">v3</span> <span class="k">&lt;-</span> <span class="n">baz</span><span class="o">(</span><span class="err">…</span><span class="o">).</span><span class="n">right</span>
+<span class="o">}</span>
+<span class="k">yield</span> <span class="err">…</span>
+</pre></div>
+
+
+<p>Whereas I&#8217;ve never used <code>.left</code> even&nbsp;once.</p>
+<p>The second minor issue is that Either has some limitations with patterns
+in <code>for</code> expressions, because of how it is forced to implement the <code>filter</code>
+method. See
+<a href="http://stackoverflow.com/questions/5831453/why-does-this-scala-for-expression-using-tuples-fail-to-compile">this Stack Overflow question</a> for the&nbsp;details.</p>
+<p>So I created a type that is explicitly designed to handle the possibility
+of &#8220;exception&#8221; conditions. Because the word &#8220;exception&#8221; already has a well
+known meaning on the <span class="caps">JVM</span>, I called this type <em>Anomaly</em> instead. Actually,
+I ended up calling the type <code>|:</code> because I thought it worked nicely
+syntactically. Here&#8217;s a comparison with <code>Either</code>:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">e1</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Right</span><span class="o">(</span><span class="mi">30</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">e2</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">String</span>, <span class="o">(</span><span class="kt">Int</span>, <span class="kt">Int</span><span class="o">)]</span> <span class="k">=</span> <span class="nc">Right</span><span class="o">((</span><span class="mi">10</span><span class="o">,</span> <span class="mi">2</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">e3</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+    <span class="n">i</span> <span class="k">&lt;-</span> <span class="n">e1</span><span class="o">.</span><span class="n">right</span>
+    <span class="n">j</span> <span class="k">&lt;-</span> <span class="n">e2</span><span class="o">.</span><span class="n">right</span>
+<span class="o">}</span>
+<span class="k">yield</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="o">.</span><span class="n">_1</span> <span class="o">+</span> <span class="n">j</span><span class="o">.</span><span class="n">_2</span>
+<span class="k">val</span> <span class="n">e4</span><span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Left</span><span class="o">(</span><span class="s">&quot;error&quot;</span><span class="o">)</span>
+</pre></div>
+
+
+<p>vs&nbsp;&#8220;Anomaly&#8221;:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">a1</span><span class="k">:</span> <span class="kt">String</span> <span class="kt">|:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="nc">Expected</span><span class="o">(</span><span class="mi">30</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">a2</span><span class="k">:</span> <span class="kt">String</span> <span class="kt">|:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">,</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Expected</span><span class="o">((</span><span class="mi">10</span><span class="o">,</span> <span class="mi">2</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">a3</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+    <span class="n">i</span> <span class="k">&lt;-</span> <span class="n">a1</span>
+    <span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">k</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">a2</span>
+<span class="o">}</span>
+<span class="k">yield</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span>
+<span class="k">val</span> <span class="n">a4</span><span class="k">:</span> <span class="kt">String</span> <span class="kt">|:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="s">&quot;error&quot;</span><span class="o">)</span>
+</pre></div>
+
+
+<p>The <code>|:</code> operator is right-associative, which helps for the occasional cases where
+you have an Anomaly within an Anomaly, eg. <code>String |: String |: Int</code> is
+equivalent to <code>Either[String, Either[String, Int]]</code>. Of course, depending
+on your taste you could reverse the order of type arguments,
+using an operator like <code>:|</code>, or use a name instead of an&nbsp;operator.</p>
+<p>There&#8217;s a cost to making the <code>for</code> expression pattern matching work like
+this, however. In addition to the <code>Anomaly</code> and <code>Expected</code> cases, I had
+to introduce a <code>NoValue</code> case object, which is what is returned when a
+filter does not match. This is annoying, because now folding or pattern
+matching must account for three cases instead of two. And unless you
+have explicit filters or patterns matching particular values, the
+<code>NoValue</code> outcome won&#8217;t come up, so it&#8217;s a pain to have to check for it.
+What I ended up doing was providing an alternate two-parameter fold method
+that calls <code>error</code> in case of a <code>NoValue</code>. You just have to be careful
+about only calling it when you know it&#8217;s&nbsp;safe.</p>
+<p>All-in-all I&#8217;m still wondering whether this experiment is worthwhile, but
+here&#8217;s the code in case anyone is interested.
+There are other utility methods that could be&nbsp;added:</p>
+<div class="codehilite"><pre><span class="k">sealed</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">|:</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+E</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">anomaly</span><span class="k">:</span> <span class="kt">A</span>
+  <span class="k">def</span> <span class="n">expected</span><span class="k">:</span> <span class="kt">E</span>
+  <span class="k">def</span> <span class="n">isExpected</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="k">def</span> <span class="n">isAnomaly</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+  <span class="k">def</span> <span class="n">isNoValue</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+
+  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="kt">|:</span> <span class="kt">X</span>
+
+  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">X</span>, <span class="kt"><span class="caps">AA</span></span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc"><span class="caps">AA</span></span> <span class="o">|:</span> <span class="n">X</span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">AA</span></span> <span class="kt">|:</span> <span class="kt">X</span>
+
+  <span class="k">def</span> <span class="n">withFilter</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="kt">|:</span> <span class="kt">E</span> <span class="o">=</span> <span class="k">this</span>
+  <span class="k">final</span> <span class="k">def</span> <span class="n">filter</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="kt">|:</span> <span class="kt">E</span> <span class="o">=</span> <span class="n">withFilter</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{}</span>
+
+  <span class="k">final</span> <span class="k">def</span> <span class="n">fold</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">fExpected</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">,</span> <span class="n">fAnomaly</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">,</span> <span class="n">fNoValue</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span><span class="k">:</span> <span class="kt">X</span> <span class="o">=</span> <span class="k">this</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fAnomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Expected</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fExpected</span><span class="o">(</span><span class="n">e</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">NoValue</span> <span class="k">=&gt;</span> <span class="n">fNoValue</span>
+  <span class="o">}</span>
+
+  <span class="k">final</span> <span class="k">def</span> <span class="n">fold</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">fExpected</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">,</span> <span class="n">fAnomaly</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span><span class="k">:</span> <span class="kt">X</span> <span class="o">=</span> <span class="k">this</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fAnomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Expected</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fExpected</span><span class="o">(</span><span class="n">e</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">NoValue</span> <span class="k">=&gt;</span> <span class="n">error</span><span class="o">(</span><span class="s">&quot;Attempt to fold NoValue case&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="k">final</span> <span class="k">def</span> <span class="n">join</span><span class="o">[</span><span class="kt">X</span>, <span class="kt"><span class="caps">AA</span></span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="k">implicit</span> <span class="n">ev</span><span class="k">:</span> <span class="kt">E</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="o">(</span><span class="kt"><span class="caps">AA</span></span> <span class="kt">|:</span> <span class="kt">X</span><span class="o">))</span><span class="k">:</span> <span class="kt"><span class="caps">AA</span></span> <span class="kt">|:</span> <span class="kt">X</span> <span class="o">=</span> <span class="k">this</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">a</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Expected</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">e</span>
+    <span class="k">case</span> <span class="nc">NoValue</span> <span class="k">=&gt;</span> <span class="nc">NoValue</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">final</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">Expected</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+E</span><span class="o">](</span><span class="n">expected</span><span class="k">:</span> <span class="kt">E</span><span class="o">)</span> <span class="k">extends</span> <span class="o">(</span><span class="n">A</span> <span class="o">|:</span> <span class="n">E</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">isExpected</span> <span class="k">=</span> <span class="kc">true</span>
+  <span class="k">def</span> <span class="n">anomaly</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=</span> <span class="nc">Predef</span><span class="o">.</span><span class="n">error</span><span class="o">(</span><span class="s">&quot;Not an anomaly&quot;</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">withFilter</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc">Boolean</span><span class="o">)</span> <span class="k">=</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">f</span><span class="o">(</span><span class="n">expected</span><span class="o">))</span> <span class="k">this</span> <span class="k">else</span> <span class="nc">NoValue</span>
+
+  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">X</span>, <span class="kt"><span class="caps">AA</span></span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc"><span class="caps">AA</span></span> <span class="o">|:</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="n">f</span><span class="o">(</span><span class="n">expected</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Expected</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">X</span><span class="o">](</span><span class="n">f</span><span class="o">(</span><span class="n">expected</span><span class="o">))</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">foreach</span><span class="o">(</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">f</span><span class="o">(</span><span class="n">expected</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">Expected</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">cond</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">E</span><span class="o">](</span><span class="n">test</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">,</span> <span class="n">expected</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="n">E</span><span class="o">,</span> <span class="n">anomaly</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="n">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="kt">|:</span> <span class="kt">E</span> <span class="o">=</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">test</span><span class="o">)</span> <span class="nc">Expected</span><span class="o">(</span><span class="n">expected</span><span class="o">)</span> <span class="k">else</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">anomaly</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">final</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">Anomaly</span><span class="o">[</span><span class="kt">+A</span>, <span class="kt">+E</span><span class="o">](</span><span class="n">anomaly</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">extends</span> <span class="o">(</span><span class="n">A</span> <span class="o">|:</span> <span class="n">E</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">isAnomaly</span> <span class="k">=</span> <span class="kc">true</span>
+  <span class="k">def</span> <span class="n">expected</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=</span> <span class="nc">Predef</span><span class="o">.</span><span class="n">error</span><span class="o">(</span><span class="s">&quot;Not an expected value&quot;</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">X</span>, <span class="kt"><span class="caps">AA</span></span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="nc"><span class="caps">AA</span></span> <span class="o">|:</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Anomaly</span><span class="o">[</span><span class="kt"><span class="caps">AA</span></span>, <span class="kt">X</span><span class="o">](</span><span class="n">anomaly</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">E</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Anomaly</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">X</span><span class="o">](</span><span class="n">anomaly</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">Anomaly</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">cond</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">E</span><span class="o">](</span><span class="n">test</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">,</span> <span class="n">anomaly</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="n">A</span><span class="o">,</span> <span class="n">expected</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="n">E</span><span class="o">)</span><span class="k">:</span> <span class="kt">A</span> <span class="kt">|:</span> <span class="kt">E</span> <span class="o">=</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">test</span><span class="o">)</span> <span class="nc">Anomaly</span><span class="o">(</span><span class="n">anomaly</span><span class="o">)</span> <span class="k">else</span> <span class="nc">Expected</span><span class="o">(</span><span class="n">expected</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">case</span> <span class="k">object</span> <span class="nc">NoValue</span> <span class="k">extends</span> <span class="o">(</span><span class="nc">Nothing</span> <span class="o">|:</span> <span class="nc">Nothing</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">isNoValue</span> <span class="k">=</span> <span class="kc">true</span>
+  <span class="k">def</span> <span class="n">anomaly</span> <span class="k">=</span> <span class="nc">Predef</span><span class="o">.</span><span class="n">error</span><span class="o">(</span><span class="s">&quot;Not an anomaly&quot;</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">expected</span> <span class="k">=</span> <span class="nc">Predef</span><span class="o">.</span><span class="n">error</span><span class="o">(</span><span class="s">&quot;No value&quot;</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">X</span>, <span class="kt"><span class="caps">AA</span></span> <span class="k">&gt;:</span> <span class="kt">Nothing</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">Nothing</span> <span class="o">=&gt;</span> <span class="nc"><span class="caps">AA</span></span> <span class="o">|:</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="k">this</span>
+
+  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">X</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">Nothing</span> <span class="o">=&gt;</span> <span class="n">X</span><span class="o">)</span> <span class="k">=</span> <span class="k">this</span>
+<span class="o">}</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+    
+
+  </article>
+</section>
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>

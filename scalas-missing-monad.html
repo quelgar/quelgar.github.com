@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Scala’s Missing Monad</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
+        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+        
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie.css"/>
+                <script src="./js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="./css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+
+        <header id="banner" class="body">
+                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                
+                
+                
+                
+                
+                    <li ><a href="./category/politics.html">politics</a></li>
+                
+                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                
+                </ul></nav>
+        </header><!-- /#banner -->
+        
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="scalas-missing-monad.html" rel="bookmark"
+           title="Permalink to Scala’s Missing Monad">Scala&#8217;s Missing&nbsp;Monad</a></h1>
+      
+    </header>
+
+    <div class="entry-content">
+      <footer class="post-info">
+        <abbr class="published" title="2010-09-30T00:00:00">
+                Thu 30 September 2010
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/programming.html">programming</a><a href="./tag/scala.html">scala</a><a href="./tag/haskell.html">haskell</a></p>
+
+
+</footer><!-- /.post-info -->
+      <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
+recently. An issue I found myself running into quite often is this: say you
+have a function that sometimes returns no results (e.g. looking up a key in a
+map). A common way to deal with that in Scala is to return an <code>Option</code>:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">foo</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</pre></div>
+
+
+<p>Simple enough. But then a typical use of such a function is to map it over all members of a&nbsp;collection:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">strings</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="n">foo</span> <span class="k">_</span><span class="o">)</span>
+</pre></div>
+
+
+<p>What I find I often want to do in a situation like this is to only bother with
+the results if all the applications of <code>foo</code> returned a result. In
+other words, I want to turn the <code>strings</code> list above into an
+<code>Option[List[String]]</code>, which is <code>Some(List(foo(1).get,
+foo(2).get, foo(3).get))</code> if all those applications of <code>foo</code>
+give values, and <code>None</code> otherwise. I couldn&#8217;t see any method in the
+Scala standard library that does what I&nbsp;want.</p>
+<p>As a bit of a functional programming n00b, one approach I&#8217;ve found to be
+useful is to work out the Haskell type signature of the function I want, feed
+that into <a href="http://haskell.org/hoogle/">Hoogle</a> and see what I get, if anything.
+In this case, the Haskell type&nbsp;is:</p>
+<div class="codehilite"><pre><span class="p">[</span><span class="kt">Maybe</span> <span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The top Hoogle result for that is the sequence&nbsp;function:</p>
+<div class="codehilite"><pre><span class="nf">sequence</span> <span class="ow">::</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="p">[</span><span class="n">m</span> <span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+
+
+<p>And look, the <code>sequence</code> function works on any monad, not just
+<code>Maybe</code>/<code>Option</code>. For example, if my <code>foo</code>
+function had been returning <code>Either[SomeErrorType, String]</code>, then
+the sequence function would give the first error in the list if there was an
+error, or the list of results if there was no error. So this is a useful
+function, but as I said, I can&#8217;t find it in the standard Scala&nbsp;library.</p>
+<p>When I thought about how to implement sequence in Scala, I immediately ran
+into trouble. It is often said that &#8220;Scala has monads&#8221;, and we know that the
+<code>flatMap</code> method is doing a monadic bind. But this support isn&#8217;t
+much more than a convention for method names and type signatures, combined
+with nice syntax in the form of <code>for</code> expressions. There is no
+monad type declared anywhere in the standard library. Without a monad type,
+the sequence function would have to be re-implemented over and over:
+<code>Option.sequence</code>, <code>Either.sequence</code>, <code>List.sequence</code>,&nbsp;etc.</p>
+<p>The good news is that Scala&#8217;s type system <em>can</em> express the monad type.
+And the better news is that some really smart people have already done all the
+work for us in a library called
+<a href="static" title="http://code.google.com/p/scalaz/">Scalaz</a>.
+So I had a look, and lo and behold there is the
+<a href="http://scalaz.googlecode.com/svn/continuous/latest/browse.sxr/scalaz/MA.scala.html#27505">sequence&nbsp;function</a></p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">sequence</span><span class="o">[</span><span class="kt">N</span><span class="o">[</span><span class="k">_</span><span class="o">]</span>, <span class="kt">B</span><span class="o">](</span><span class="k">implicit</span> <span class="n">a</span><span class="k">:</span> <span class="kt">A</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="kt">N</span><span class="o">[</span><span class="kt">B</span><span class="o">],</span>
+  <span class="n">t</span><span class="k">:</span> <span class="kt">Traverse</span><span class="o">[</span><span class="kt">M</span><span class="o">],</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Applicative</span><span class="o">[</span><span class="kt">N</span><span class="o">])</span><span class="k">:</span> <span class="kt">N</span><span class="o">[</span><span class="kt">M</span><span class="o">[</span><span class="kt">B</span><span class="o">]]</span> <span class="k">=</span>
+    <span class="n">traverse</span><span class="o">((</span><span class="n">z</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">z</span><span class="k">:</span> <span class="kt">N</span><span class="o">[</span><span class="kt">B</span><span class="o">]))</span>
+</pre></div>
+
+
+<p>That may look nothing like the Haskell function, but that is mostly a result
+of how typeclasses are expressed in Scala. Trust me, this is the same
+function. Also, this Scalaz function is more general than the Haskell function
+above. It turns out that sequence works for any &#8220;traversable&#8221; thing (not just
+lists) containing anything that is an applicative functor (not just monads).
+Haskell also has the equivalent fully generalised sequence function in the
+<code>Data.Traversable</code> library.</p>
+<p>So what did I learn from this exercise? First that the lack of explicit types
+for monad, functor and friends in Scala&#8217;s standard library is a greater
+problem than I&#8217;d expected. Second, if you&#8217;re writing pure functional Scala
+code, you should be using Scalaz. Since all Scala programmers should be
+writing pure functional code, it follows that all Scala programmers should be
+using&nbsp;Scalaz!</p>
+    </div><!-- /.entry-content -->
+    
+
+  </article>
+</section>
+
+        <section id="extras" class="body">
+        
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                        
+                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                        
+                            <li><a href="http://java.oracle.com/">Java</a></li>
+                        
+                            <li><a href="http://www.apple.com/">Apple</a></li>
+                        
+                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                        
+                        </ul>
+                </div><!-- /.blogroll -->
+        
+        
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+
+                        
+                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                        
+                            <li><a href="https://github.com/quelgar">GitHub</a></li>
+                        
+                        </ul>
+                </div><!-- /.social -->
+        
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+
+
+
+</body>
+</html>
