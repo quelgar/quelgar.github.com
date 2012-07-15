@@ -43,8 +43,133 @@
         
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="./lying-to-stop-same-sex-marriage.html">Lying to Stop Same Sex&nbsp;Marriage</a></h1> 
+                    <h1 class="entry-title"><a href="./do-you-get-referential-transparency.html">Do You Get Referential&nbsp;Transparency?</a></h1> 
                     <footer class="post-info">
+        <abbr class="published" title="2012-07-15T00:00:00">
+                Sun 15 July 2012
+        </abbr>
+
+        
+        <address class="vcard author">
+                By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        
+<p>In <a href="./category/programming.html">programming</a>. </p>
+<p>tags: <a href="./tag/scala.html">scala</a><a href="./tag/programming.html">programming</a></p>
+
+
+</footer><!-- /.post-info --><p>Do you get referential transparency? I mean, really <em>get</em> it? I thought I did, but I recently gained a deeper appreciation for what it&nbsp;means.</p>
+<p>Referential transparency is also commonly referred to as &#8220;pure&#8221; functional programming. I understood this to mean that the code lacked side effects like performing I/O or mutating state, and this seems to be a common understanding. But referential transparency can actually be defined quite precisely and succinctly (although I believe agreement with this definition would be far from&nbsp;universal):</p>
+<blockquote>
+<p>If replacing expression x by its value produces the same behaviour, then x is referentially&nbsp;transparent</p>
+</blockquote>
+<p>Sounds simple enough. But notice that this definition contains no reference to I/O or state or any of the things usually associated with lack of referential transparency; keep that in mind. The above definition is the <em>entire</em> definition: if replacing an expression by its value produces no change in program behaviour, then you have referential transparency, <em>regardless of what the behaviour is</em>.</p>
+<p>Now, consider the following example, using Scala (you will need to understand <a href="http://docs.scala-lang.org/tutorials/FAQ/yield.html">how Scala translates</a> <code>for</code> syntax to <code>map</code> and <code>flatMap</code> method calls to follow&nbsp;this):</p>
+<div class="codehilite"><pre><span class="k">final</span> <span class="k">class</span> <span class="nc">Writer</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="k">val</span> <span class="n">value</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="k">val</span> <span class="n">log</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+
+  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">f</span><span class="o">(</span><span class="n">value</span><span class="o">),</span> <span class="n">log</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="nc">Writer</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">b</span> <span class="k">=</span> <span class="n">f</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+    <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">b</span><span class="o">.</span><span class="n">value</span><span class="o">,</span> <span class="n">log</span> <span class="o">++</span> <span class="n">b</span><span class="o">.</span><span class="n">log</span><span class="o">)</span>
+  <span class="o">}</span>
+
+<span class="o">}</span>
+
+<span class="k">object</span> <span class="nc">Writer</span> <span class="o">{</span>
+
+  <span class="cm">/** Log a message without a value */</span>
+  <span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">((),</span> <span class="nc">Vector</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span>
+
+  <span class="cm">/** Log a message with a value */</span>
+  <span class="k">def</span> <span class="n">logv</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)(</span><span class="n">a</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="nc">Vector</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span>
+
+  <span class="k">def</span> <span class="n">apply</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+
+<span class="o">}</span>
+</pre></div>
+
+
+<p>The above is a very basic writer monad. Let&#8217;s put it to use in a silly&nbsp;example:</p>
+<div class="codehilite"><pre><span class="k">import</span> <span class="nn">Writer.</span><span class="o">{</span> <span class="n">log</span><span class="o">,</span> <span class="n">logv</span> <span class="o">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Add one to a number and log a message.</span>
+<span class="cm"> * Referentially transparent.</span>
+<span class="cm"> */</span>
+<span class="k">def</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span>  <span class="n">logv</span><span class="o">(</span><span class="s">&quot;added 1 to &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">)(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">log1</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;before&quot;</span><span class="o">)</span>
+  <span class="n">n1</span> <span class="k">&lt;-</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
+  <span class="n">n2</span> <span class="k">&lt;-</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
+  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;after&quot;</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span><span class="o">)</span>
+</pre></div>
+
+
+<p>All the code so far has been pure functional, that is, referentially transparent. What we have done is made an ordinary value, <code>log1</code> that produces an integer value, while also accumulating logging messages, which could be thought of as really simple instructions to &#8220;log this message&#8221;. At some point we decide we want to display these log messages to the user, so we write a method to &#8220;run&#8221; the accumulated logging instructions, which requires a non-referentially transparent&nbsp;function:</p>
+<div class="codehilite"><pre><span class="cm">/**</span>
+<span class="cm"> * Side-effect! Prints log messages to stdout.</span>
+<span class="cm"> * Not referentially transparent.</span>
+<span class="cm"> */</span>
+<span class="k">def</span> <span class="n">run</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">w</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">w</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">printf</span><span class="o">(</span><span class="s">&quot;*log* %s%n&quot;</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
+  <span class="n">w</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>The output of <code>printf("result1 = %d%n", run(log1))</code> is:</p>
+<div class="codehilite"><pre>*log* before
+*log* added 1 to 41
+*log* added 1 to 41
+*log* after
+result1 = 84
+</pre></div>
+
+
+<p>as expected. Notice that the <code>addOneAndLog(41)</code> expression is repeated twice. What if we replace that with a single&nbsp;value:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">add</span> <span class="k">=</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">log2</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;before&quot;</span><span class="o">)</span>
+  <span class="n">n1</span> <span class="k">&lt;-</span> <span class="n">add</span>
+  <span class="n">n2</span> <span class="k">&lt;-</span> <span class="n">add</span>
+  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;after&quot;</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span><span class="o">)</span>
+</pre></div>
+
+
+<p>What log messages would you expect from <code>printf("result2 = %d%n", run(log2))</code>? We get exactly the same log messages as for <code>log1</code>. This is because the expression we factored out was referentially transparent: replacing it by its final value changes absolutely nothing about how the code&nbsp;behaves.</p>
+<p>I thought I had a good handle on all this functional stuff, when I made a change like that between <code>log1</code> and <code>log2</code> to some production code. I was surprised to see output still showing up twice, and it took me a few minutes to figure out I was seeing referentially transparency in action. This made me realise that so many of my expectations are still conditioned by years of programming with imperative, side-effecting code. Perhaps when I find the <em>lack</em> of referential transparency surprising I can officially call myself a functional&nbsp;programmer.</p>
+<p>One very interesting thing to note is that the need for I/O in no way precludes the use of referentially transparent code. Some might say at this point &#8220;but you&#8217;re cheating, the run function is not referentially transparent!&#8221;. Yes, all referentially transparent code will end up being translated to a series of side effects in order to run on a real machine. The fact that some of this translation happens in the same language used to write our pure code is a detail of no great&nbsp;significance.</p>
+<p>But if side effects are always unavoidable at some point, why bother worrying about referential transparency at all? Well, my experience has been that after maximising pure code, you&#8217;ll find that whatever side effecting code you need tends to be very simple and self-contained, and does not get in the way of composition the way it would in a &#8220;traditional&#8221; imperative program. The composition of large programs from smaller programs is the power that referential transparency gives you. Of course, we&#8217;ve come up with many way to compose bits of code together, but they all suck compared to referential transparency. I think that the relative simplicity of the concept (notwithstanding occasional surprises for those of us new to it) sometimes blinds us to just how powerful it really&nbsp;is.</p>
+<p>If my toy logging example hasn&#8217;t convinced you that this is a good way to write programs, perhaps a slightly (only slightly) less trivial example will help. Like many ideas, the benefits only really become apparent when you start scaling up. <a href="https://gist.github.com/3114349">This gist</a> contains a program that interleaves the following: reading from the console, writing to the console, and reading from the file system, all driven from code that is referentially&nbsp;transparent.</p><p>There are <a href="./do-you-get-referential-transparency.html#disqus_thread">comments</a>.</p>
+                </article>
+                
+            </aside><!-- /#featured -->
+            
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+            
+        
+        
+        
+            
+
+        
+         
+            
+            <li><article class="hentry">    
+                <header>
+                    <h1><a href="./lying-to-stop-same-sex-marriage.html" rel="bookmark"
+                           title="Permalink to Lying to Stop Same Sex Marriage">Lying to Stop Same Sex&nbsp;Marriage</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
         <abbr class="published" title="2012-05-13T00:00:00">
                 Sun 13 May 2012
         </abbr>
@@ -58,27 +183,13 @@
 <p>tags: <a href="./tag/politics.html">politics</a><a href="./tag/gay-marriage.html">gay marriage</a><a href="./tag/religion.html">religion</a></p>
 
 
-</footer><!-- /.post-info --><p>So it so happened that Ten News was on the <span class="caps">T.V.</span> at our place tonight (this is in Melbourne, Australia). Nothing remarkable until <a href="http://ten.com.au/video-player.htm?movideo_m=188000&amp;movideo_p=44243">a story</a> about 150 doctors issuing a warning that same-sex marriage poses &#8220;health risks&#8221;. The group behind this is called <a href="http://www.doctors4family.com.au/">Doctors For The Family</a>, which calls itself a &#8220;medical organisation to highlight the health aspects of marriage&#8221;. Ten just described them as &#8220;a conservative medical group&#8221;, a term that to me seems nonsensical. But I immediately thought &#8220;I bet it&#8217;s a Christian fundamentalist&nbsp;front&#8221;.</p>
-<p>The Doctors For The Family web site is remarkably coy about who is behind it. But the group is run by the chap in the Ten story, who lists himself as the founder on his <a href="http://au.linkedin.com/pub/lachlan-dunjey/1a/b72/5bb?_mSplash=1">LinkedIn profile</a>: Dr Lachlan Dunjey. From this and <a href="http://www.churchinperth.com/articles/ldunjey/index.htm">some other pages</a> we learn some facts about Dr Dunjey that seem&nbsp;relevant:</p>
-<ul>
-<li><span class="dquo">&#8220;</span>He was the Senate candidate for the Christian Democratic Party at the 2004 federal&nbsp;election&#8221;</li>
-<li>Before scaring, sorry, <em>educating</em> us about the health risks of same-sex marriage he was campaigning for &#8220;freedom of conscience in health care&#8221;, a euphemism for permitting Christian medical professionals to refuse to perform abortions even when medically&nbsp;indicated.</li>
-<li>He says &#8220;we need to change people&#8217;s hearts and minds by bringing them into the Kingdom of&nbsp;God&#8221;</li>
-<li>He&#8217;s really upset about the depraved state of contemporary society, including such debauchery as alcohol being served at Christian wedding&nbsp;receptions.</li>
-</ul>
-<p>Now, before I get accused of an <em>ad hominem</em> fallacy, it must be noted that none of this shows that Dr Dunjey&#8217;s claims are false. However, I do believe it gives us good reason to be very skeptical of his group&#8217;s claims, especially as to whether the term &#8220;medical&#8221; is&nbsp;merited.</p>
-<p>The so-called medical evidence presented by Doctors For The Family seems very dodgy. Credible medical organisations generally don&#8217;t make claims about whether same-sex relationships are better or worse for children than hetero ones, simply because there&#8217;s no definitive evidence either way. Most <a href="http://people.virginia.edu/~cjp/articles/ffp10b.pdf">studies</a> seem to back the (to me, rather common sense) notion that when considering all the factors that affect child development, the sexual orientation of the parents doesn&#8217;t really register as&nbsp;significant.</p>
-<p>Doctors For The Family is essentially another deceitful pseudo-scientific attempt to make fringe religious views appear scientific. Just like the Intelligent Design crowd, they start with a pre-determined conclusion and scour the globe looking for any scrap of data that supports that conclusion. In other words, they follow the scientific method, only exactly backwards. Just because this group is supported by some people with &#8220;Doctor&#8221; on their business cards doesn&#8217;t mean it deserves to be called&nbsp;&#8220;medical&#8221;.</p><p>There are <a href="./lying-to-stop-same-sex-marriage.html#disqus_thread">comments</a>.</p>
-                </article>
-                
-            </aside><!-- /#featured -->
-            
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
-            
-        
+</footer><!-- /.post-info -->
+                <p>So it so happened that Ten News was on the <span class="caps">T.V.</span> at our place tonight (this is in Melbourne, Australia). Nothing remarkable until <a href="http://ten.com.au/video-player.htm?movideo_m=188000&amp;movideo_p=44243">a story</a> about 150 doctors issuing a warning that same-sex marriage poses &#8220;health risks&#8221;. The group behind this is called <a href="http://www.doctors4family.com.au/">Doctors For The Family</a>, which calls itself a &#8220;medical organisation to highlight the health aspects of marriage&#8221;. Ten just described them as &#8220;a conservative medical group&#8221;, a term that to me seems nonsensical. But I immediately thought &#8220;I bet it&#8217;s a Christian fundamentalist&nbsp;front&#8221;.</p>
+<p>The Doctors For The Family web site is remarkably coy about ...</p>
+                <a class="readmore" href="./lying-to-stop-same-sex-marriage.html">read more</a>
+                <p>There are <a href="./lying-to-stop-same-sex-marriage.html#disqus_thread">comments</a>.</p>
+                </div><!-- /.entry-content -->
+            </article></li>
         
         
             
