@@ -4,9 +4,8 @@
         <title>Handling InvocationTargetException</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="handling-invocationtargetexception.html" rel="bookmark"
+        <a href="./handling-invocationtargetexception.html" rel="bookmark"
            title="Permalink to Handling InvocationTargetException">Handling&nbsp;InvocationTargetException</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,22 +40,16 @@
                 Fri 23 December 2005
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/java.html">java</a><a href="./tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>A quick hint on handling <code>java.lang.reflect.InvocationTargetException</code>.</p>
+</footer><!-- /.post-info -->      <p>A quick hint on handling <code>java.lang.reflect.InvocationTargetException</code>.</p>
 <p>This sucker is thrown whenever you invoke a method via reflection (typically via <code>Method.invoke</code>), and that method throws any sort of exception. So it doesn&#8217;t indicate a problem with the reflection mechanism, it is simply how the reflection mechanism notifies you of exceptions thrown by the method you&nbsp;called.</p>
 <p>Whenever you catch this exception (and you will have to catch it at some level), the first thing you should do is call <code>getCause()</code>. This returns the exception thrown from the method that was invoked via reflection, and that&#8217;s what you care&nbsp;about.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -79,54 +62,37 @@
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -137,6 +103,5 @@
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

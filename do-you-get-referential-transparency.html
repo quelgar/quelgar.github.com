@@ -4,9 +4,8 @@
         <title>Do You Get Referential Transparency?</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="do-you-get-referential-transparency.html" rel="bookmark"
+        <a href="./do-you-get-referential-transparency.html" rel="bookmark"
            title="Permalink to Do You Get Referential Transparency?">Do You Get Referential&nbsp;Transparency?</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,17 +40,12 @@
                 Sun 15 July 2012
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/scala.html">scala</a><a href="./tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>Do you get referential transparency? I mean, really <em>get</em> it? I thought I did, but I recently gained a deeper appreciation for what it&nbsp;means.</p>
+</footer><!-- /.post-info -->      <p>Do you get referential transparency? I mean, really <em>get</em> it? I thought I did, but I recently gained a deeper appreciation for what it&nbsp;means.</p>
 <p>Referential transparency is also commonly referred to as &#8220;pure&#8221; functional programming. I understood this to mean that the code lacked side effects like performing I/O or mutating state, and this seems to be a common understanding. But referential transparency can actually be defined quite precisely and succinctly (although I believe agreement with this definition would be far from&nbsp;universal):</p>
 <blockquote>
 <p>If replacing expression x by its value produces the same behaviour, then x is referentially&nbsp;transparent</p>
@@ -149,8 +133,7 @@ result1 = 84
 <p>But if side effects are always unavoidable at some point, why bother worrying about referential transparency at all? Well, my experience has been that after maximising pure code, you&#8217;ll find that whatever side effecting code you need tends to be very simple and self-contained, and does not get in the way of composition the way it would in a &#8220;traditional&#8221; imperative program. The composition of large programs from smaller programs is the power that referential transparency gives you. Of course, we&#8217;ve come up with many way to compose bits of code together, but they all suck compared to referential transparency. I think that the relative simplicity of the concept (notwithstanding occasional surprises for those of us new to it) sometimes blinds us to just how powerful it really&nbsp;is.</p>
 <p>If my toy logging example hasn&#8217;t convinced you that this is a good way to write programs, perhaps a slightly (only slightly) less trivial example will help. Like many ideas, the benefits only really become apparent when you start scaling up. <a href="https://gist.github.com/3114349">This gist</a> contains a program that interleaves the following: reading from the console, writing to the console, and reading from the file system, all driven from code that is referentially&nbsp;transparent.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -163,54 +146,37 @@ result1 = 84
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -221,6 +187,5 @@ result1 = 84
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

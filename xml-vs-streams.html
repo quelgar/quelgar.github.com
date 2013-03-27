@@ -4,9 +4,8 @@
         <title>XML vs Streams</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="xml-vs-streams.html" rel="bookmark"
+        <a href="./xml-vs-streams.html" rel="bookmark"
            title="Permalink to XML vs Streams"><span class="caps">XML</span> vs&nbsp;Streams</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,23 +40,17 @@
                 Tue 26 September 2006
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/java.html">java</a><a href="./tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>Ever get the feeling that <span class="caps">XML</span> sometimes makes things harder than they need to be? One of the problems that I and others have run into is that when parsing <span class="caps">XML</span> using <span class="caps">SAX</span> (or, in my case, using <span class="caps">JAXB</span> to unmarshall <span class="caps">XML</span>, which uses <span class="caps">SAX</span> under the hood) from an InputStream, the stream is always closed after the parsing is complete. This is surprising behaviour in Java, because you&#8217;re not supposed to close streams you don&#8217;t own. This can be a problem when <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/07/socket_xml_pitf.html">using network sockets</a> or when you want to write two or more unrelated <span class="caps">XML</span> documents to the same&nbsp;stream.</p>
+</footer><!-- /.post-info -->      <p>Ever get the feeling that <span class="caps">XML</span> sometimes makes things harder than they need to be? One of the problems that I and others have run into is that when parsing <span class="caps">XML</span> using <span class="caps">SAX</span> (or, in my case, using <span class="caps">JAXB</span> to unmarshall <span class="caps">XML</span>, which uses <span class="caps">SAX</span> under the hood) from an InputStream, the stream is always closed after the parsing is complete. This is surprising behaviour in Java, because you&#8217;re not supposed to close streams you don&#8217;t own. This can be a problem when <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/07/socket_xml_pitf.html">using network sockets</a> or when you want to write two or more unrelated <span class="caps">XML</span> documents to the same&nbsp;stream.</p>
 <p>The root cause of this isn&#8217;t anything in Java or <span class="caps">SAX</span>, it&#8217;s the <span class="caps">XML</span> specification itself. There&#8217;s simply no way to tell when an <span class="caps">XML</span> document ends. Every well-formed <span class="caps">XML</span> document will have an end tag, so you&#8217;d think the parser could simply stop when it reached the end tag. However, the <span class="caps">XML</span> specification allows for an arbitrary amount of comments and processing instructions to follow the main element. So when reading from a stream, the parser has no choice but to keep reading until it gets to the end of the stream. After reading to the end of the stream, <span class="caps">SAX</span> calls close on it. I believe the reason for this is that the stream has been completely read anyway, so there&#8217;s no point keeping it&nbsp;open.</p>
 <p>I&#8217;ve had a couple of cases where I&#8217;ve wanted to write two or more independent <span class="caps">XML</span> documents to the same stream. In one case, I had a thread producing <span class="caps">XML</span> documents and writing them to a PipedOutputStream. Another thread would read from the corresponding PipedInputStream. The second case was a save file for an application that happened to include two unrelated <span class="caps">XML</span> documents. Because of the &#8220;uncertain ending&#8221; feature of the <span class="caps">XML</span> spec, neither of these things are&nbsp;possible.</p>
 <p>Not unless you use customised input and output streams, that is. After some searching, I found some classes from Xerces called <a href="http://svn.apache.org/viewvc/xerces/java/trunk/samples/socket/io/WrappedOutputStream.java?revision=447688&amp;amp;view=markup">WrappedOutputStream</a> and <a href="http://svn.apache.org/viewvc/xerces/java/trunk/samples/socket/io/WrappedInputStream.java?revision=447688&amp;amp;view=markup">WrappedInputStream</a> that allowed me to do what I wanted. They actually solve the more general problem of reading data of unknown length without reading too much. I ended up writing my own implementations, but I used the same &#8220;protocol&#8221; as these classes. I can now read and write <span class="caps">XML</span> over streams without having to use a new stream for each&nbsp;document.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -80,54 +63,37 @@
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -138,6 +104,5 @@
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

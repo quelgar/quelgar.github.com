@@ -3,61 +3,45 @@
 <head>
         <title>Wisdom Eludes Me - haskell</title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" href=".././theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+        <link rel="stylesheet" href="../theme/css/main.css" type="text/css" />
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
         <!--[if lte IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie.css"/>
-                <script src=".././js/IE8.js" type="text/javascript"></script><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie.css"/>
+                <script src="../js/IE8.js" type="text/javascript"></script><![endif]-->
 
         <!--[if lt IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie6.css"/><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie6.css"/><![endif]-->
 
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href="../.">Wisdom Eludes Me </a></h1>
+                <h1><a href="../">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href=".././category/politics.html">politics</a></li>
-                
-                    <li ><a href=".././category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="../category/politics.html">politics</a></li>
+                                    <li ><a href="../category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
                 
-
             
 
-        
-        
-            <aside id="featured" class="body">
+                            <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href=".././scalas-missing-monad.html">Scala&#8217;s Missing&nbsp;Monad</a></h1> 
+                    <h1 class="entry-title"><a href="../scalas-missing-monad.html">Scala&#8217;s Missing&nbsp;Monad</a></h1> 
                     <footer class="post-info">
         <abbr class="published" title="2010-09-30T00:00:00">
                 Thu 30 September 2010
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/scala.html">scala</a><a href=".././tag/haskell.html">haskell</a></p>
-
-
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/programming.html">programming</a><a href="../tag/scala.html">scala</a><a href="../tag/haskell.html">haskell</a></p>
 </footer><!-- /.post-info --><p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
 recently. An issue I found myself running into quite often is this: say you
 have a function that sometimes returns no results (e.g. looking up a key in a
@@ -108,7 +92,7 @@ the sequence function would have to be re-implemented over and over:
 <p>The good news is that Scala&#8217;s type system <em>can</em> express the monad type.
 And the better news is that some really smart people have already done all the
 work for us in a library called
-<a href="../static" title="http://code.google.com/p/scalaz/">Scalaz</a>.
+<a href="" title="http://code.google.com/p/scalaz/">Scalaz</a>.
 So I had a look, and lo and behold there is the
 <a href="http://scalaz.googlecode.com/svn/continuous/latest/browse.sxr/scalaz/MA.scala.html#27505">sequence&nbsp;function</a></p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="n">sequence</span><span class="o">[</span><span class="kt">N</span><span class="o">[</span><span class="k">_</span><span class="o">]</span>, <span class="kt">B</span><span class="o">](</span><span class="k">implicit</span> <span class="n">a</span><span class="k">:</span> <span class="kt">A</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="kt">N</span><span class="o">[</span><span class="kt">B</span><span class="o">],</span>
@@ -129,27 +113,18 @@ for monad, functor and friends in Scala&#8217;s standard library is a greater
 problem than I&#8217;d expected. Second, if you&#8217;re writing pure functional Scala
 code, you should be using Scalaz. Since all Scala programmers should be
 writing pure functional code, it follows that all Scala programmers should be
-using&nbsp;Scalaz!</p><p>There are <a href=".././scalas-missing-monad.html#disqus_thread">comments</a>.</p>
-                </article>
-                
-            </aside><!-- /#featured -->
-            
-                <section id="content" class="body">
+using&nbsp;Scalaz!</p><p>There are <a href="../scalas-missing-monad.html#disqus_thread">comments</a>.</p>                </article>
+                            </aside><!-- /#featured -->
+                            <section id="content" class="body">
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
-            
-        
-        
-        
-            
+                                                
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././cocoa-vs-haskell.html" rel="bookmark"
+                    <h1><a href="../cocoa-vs-haskell.html" rel="bookmark"
                            title="Permalink to Cocoa vs Haskell">Cocoa vs&nbsp;Haskell</a></h1>
                 </header>
                 
@@ -159,77 +134,47 @@ using&nbsp;Scalaz!</p><p>There are <a href=".././scalas-missing-monad.html#disqu
                 Fri 08 January 2010
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/cocoa.html">cocoa</a><a href=".././tag/haskell.html">haskell</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>So here&#8217;s the deal - if you want to write a Mac <span class="caps">GUI</span> app, you want to use the Cocoa framework. As a practical system for writing desktop <span class="caps">GUI</span> apps, the Cocoa stack simply has no equal anywhere. Part of what makes Cocoa so great is the Objective-C language, which adds a very flexible and dynamic <span class="caps">OOP</span> system on top of standard&nbsp;C.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/programming.html">programming</a><a href="../tag/cocoa.html">cocoa</a><a href="../tag/haskell.html">haskell</a></p>
+</footer><!-- /.post-info -->                <p>So here&#8217;s the deal - if you want to write a Mac <span class="caps">GUI</span> app, you want to use the Cocoa framework. As a practical system for writing desktop <span class="caps">GUI</span> apps, the Cocoa stack simply has no equal anywhere. Part of what makes Cocoa so great is the Objective-C language, which adds a very flexible and dynamic <span class="caps">OOP</span> system on top of standard&nbsp;C.</p>
 <p>Objective-C turned out to be a great match for creating desktop GUIs. It&#8217;s obviously a general-purpose language, but for general programming it would be no where near my first choice. My first choice right now would ...</p>
-                <a class="readmore" href=".././cocoa-vs-haskell.html">read more</a>
-                <p>There are <a href=".././cocoa-vs-haskell.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../cocoa-vs-haskell.html">read more</a>
+                <p>There are <a href="../cocoa-vs-haskell.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            </ol><!-- /#posts-list -->
-            
-                
-            
-            </section><!-- /#content -->
-        
-    
-
-
-        <section id="extras" class="body">
-        
-                <div class="blogroll">
+                            </ol><!-- /#posts-list -->
+                                                    </section><!-- /#content -->
+                    <section id="extras" class="body">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -240,6 +185,5 @@ using&nbsp;Scalaz!</p><p>There are <a href=".././scalas-missing-monad.html#disqu
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

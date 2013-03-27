@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Wisdom Eludes Me - play</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="../theme/css/main.css" type="text/css" />
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie.css"/>
+                <script src="../js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie6.css"/><![endif]-->
+
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="../">Wisdom Eludes Me </a></h1>
+                <nav><ul>
+                                                                                                    <li ><a href="../category/politics.html">politics</a></li>
+                                    <li ><a href="../category/programming.html">programming</a></li>
+                                </ul></nav>
+        </header><!-- /#banner -->
+                
+            
+
+                            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="../deploying-a-play-application-on-ubuntu.html">Deploying a Play Application on&nbsp;Ubuntu</a></h1> 
+                    <footer class="post-info">
+        <abbr class="published" title="2013-03-28T00:00:00">
+                Thu 28 March 2013
+        </abbr>
+
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a><a href="../tag/play.html">play</a></p>
+</footer><!-- /.post-info --><p>The more I use the <a href="http://www.playframework.com">Play Web Framework</a>, the more I like it. The &#8220;dev mode&#8221; is great, compiling everything that&#8217;s changed on the fly, including the statically checked routes and templates. But sooner or later we want to deploy our app for&nbsp;reals.</p>
+<p>The <code>dist</code> target will package up your app into a zip file with a simple shell script to launch it. That&#8217;s fine as far as it goes, but of course I want to run it as a proper service that starts automatically when the machine boots and can be easily shutdown and restarted. My production <span class="caps">OS</span> of choice is Ubuntu. Let&#8217;s do&nbsp;this.</p>
+<h1>Upstart</h1>
+<p>I only learned about <a href="http://upstart.ubuntu.com">Upstart</a> recently while researching this problem. It&#8217;s essentially an improved version of the traditional System V init system. This discovery made me very glad I chose Ubuntu, as Upstart is both powerful and remarkably simple to use once you know the basics. The <a href="http://upstart.ubuntu.com/cookbook/">Upstart &#8220;cookbook&#8221;</a> might look a bit intimidating at first, but after a bit of playing around I found it was quite simple to do what I&nbsp;wanted.</p>
+<p>By the way, Ubuntu still has the traditional System V init thing as well. I was happily using that for ages without any idea that it had a whole other more advanced init system controlling it. This is because Debian still uses the System V init by default, so all Debian packages use System V, and Ubuntu doesn&#8217;t want to re-do all that&nbsp;work.</p>
+<h1>Steps</h1>
+<p>This is how I got my Play server running with Upstart. This was all done on Ubuntu 12.10 and seems to be working well so far. Obviously, there are a number of choices I&#8217;ve made that could be made differently, so this is not the only way to do&nbsp;it.</p>
+<h2>1. System user for&nbsp;Play</h2>
+<p>I wanted a user dedicated to running Play servers.&nbsp;Easy:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo adduser --system play
+</pre></div>
+
+
+<h2>2. Unzip your Play&nbsp;app</h2>
+<p>Just unzip your Play app somewhere. For this explanation, I&#8217;m going to assume it&#8217;s unzipped to <code>/play/myapp-1.0</code>.</p>
+<p>The <code>play</code> user will need to be able to write to the app&#8217;s&nbsp;directories:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo chown -R play:adm /play/myapp-1.0
+</pre></div>
+
+
+<h2>3. Create an Upstart configuration&nbsp;file</h2>
+<p>All Upstart &#8220;jobs&#8221; are defined by a file in <code>/etc/init</code> named <code>jobname.conf</code>. The &#8220;jobname&#8221; bit is what you call the job when starting it or checking its status or whatever. So let&#8217;s create a file <code>/etc/init/myapp.conf</code> as&nbsp;follows:</p>
+<div class="codehilite"><pre># Upstart configuration for myapp Play application
+
+description &quot;Magellan Config Server&quot;
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+setuid play
+
+console log
+
+env PLAY_DIR=/play/myapp-1.0
+env JAVA_HOME=/usr/lib/jvm/jre1.7.0_17
+
+exec $JAVA_HOME/bin/java -Dhttp.port=9001 -classpath $PLAY_DIR/lib/\* play.core.server.NettyServer $PLAY_DIR
+</pre></div>
+
+
+<p>All this stuff (known as <em>stanzas</em>) is described in the above mentioned Upstart cookbook, but I&#8217;ll go through it&nbsp;briefly.</p>
+<p>The <code>start on</code>/<code>stop on</code> lines indicate that these actions are triggered by changes in the system&#8217;s runlevel. Upstart uses runlevels just like System V, and on Ubuntu levels 2 through 5 are all the same. There are many events that can be used to trigger start and stop, but for a standalone daemon process, these do the&nbsp;job.</p>
+<p>The <code>setuid</code> stanza means the job will be executed as the specified user instead of root. This seems like a simple thing, but you&#8217;d be amazed how fiddly it can be to do this via traditional means if you need to pass environment variables&nbsp;through.</p>
+<p>The <code>console log</code> stanza means that stdout and stderr are redirected to <code>/var/log/upstart/myapp.log</code>. This was useful when debugging why my job wasn&#8217;t starting. I&#8217;m going to change it to <code>console none</code> on my server as I no longer need this&nbsp;log.</p>
+<p>I&#8217;m just using the <code>env</code> stanzas to break out the path settings. There&#8217;s seems to be a whole lot more they can be used for in Upstart, but I haven&#8217;t needed to worry about that&nbsp;yet.</p>
+<p>The <code>exec</code> stanza specifies the command to run to run the job. This is basically the command from the <code>start</code> script that Play provides for us. I&#8217;ve just replaced the explicit listing of all the jars with the newer classpath wildcard feature, and specified the port for Play to&nbsp;use.</p>
+<h2>4. Start&nbsp;it</h2>
+<p>Upstart jobs are controlled by the <code>initctl</code> command. But there are various alias commands to save some typing. For example, <code>sudo start foo</code> is the same as <code>sudo initctl start foo</code>. So, let&#8217;s start our Play&nbsp;app:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo start myapp
+</pre></div>
+
+
+<p>Hopefully, you&#8217;ll be rewarded&nbsp;with:</p>
+<div class="codehilite"><pre>myapp start/running, process 1234
+</pre></div>
+
+
+<p>You can confirm&nbsp;with:</p>
+<div class="codehilite"><pre><span class="gp">$</span> ps -p 1234
+</pre></div>
+
+
+<p>If something went wrong, check <code>/var/log/upstart/myapp.log</code> for&nbsp;clues.</p>
+<p>Some other&nbsp;commands:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo status myapp
+<span class="gp">$</span> sudo stop myapp
+<span class="gp">$</span> sudo restart myapp
+<span class="gp">$</span> sudo initctl list  <span class="c"># list all Upstart jobs</span>
+</pre></div>
+
+
+<h1>Port&nbsp;80</h1>
+<p>Of course, we like our <span class="caps">HTTP</span> servers to use port 80 (and or 443). There are a few ways this can be arranged, here&#8217;s the ones I know&nbsp;of:</p>
+<ul>
+<li>Run as root (don&#8217;t do&nbsp;this)</li>
+<li>Redirect port 80 using the&nbsp;firewall</li>
+<li>Use <a href="http://en.wikipedia.org/wiki/Authbind">authbind(1)</a></li>
+<li>Use a <span class="caps">HTTP</span> reverse proxy. I&#8217;m experimenting with <a href="http://nginx.org">nginx</a></li>
+</ul>
+<p>I&#8217;ve used authbind, it&#8217;s pretty straight-forward and works with the <span class="caps">JVM</span>. It&#8217;s good when you just have a single server that you want on port&nbsp;80/443.</p>
+<p>As Play apps run standalone with their own embedded Netty web server, an <span class="caps">HTTP</span> reverse proxy seems like it will prove quite useful. If you have a bunch of Play apps using different ports, you can use the proxy to make them all appear as part of a single &#8220;server&#8221; on port 80 (distinguished by something like a path in the <span class="caps">URL</span> or by the <span class="caps">HTTP</span> &#8220;host&#8221; header). Nginx (pronounced &#8220;Engine-X&#8221;) can also do simple load balancing, which should allow us to leverage Play&#8217;s stateless style. I&#8217;m still experimenting with these features at this&nbsp;stage.</p>
+<h1>Conclusion</h1>
+<p>I was pleasantly surprised at how easy it was to get my Play app up and running as an Ubuntu service. I had to spend some time learning Upstart, but it was well worth it. Upstart takes care housekeeping such as tracking the service&#8217;s <span class="caps">PID</span> for you. Compare the short configuration file above to the System V script included with Ubuntu&#8217;s Tomcat 7 package, which weighs in at 296&nbsp;lines!</p><p>There are <a href="../deploying-a-play-application-on-ubuntu.html#disqus_thread">comments</a>.</p>                </article>
+                                                                </aside><!-- /#featured -->
+                                                </ol><!-- /#posts-list -->
+                        </section><!-- /#content -->
+                    <section id="extras" class="body">
+                        <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
+                </div><!-- /.blogroll -->
+                                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                            
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
+                </div><!-- /.social -->
+                </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+<script type="text/javascript">
+    var disqus_shortname = 'wisdom-eludes-me';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>

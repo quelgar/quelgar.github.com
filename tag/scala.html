@@ -3,168 +3,166 @@
 <head>
         <title>Wisdom Eludes Me - scala</title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" href=".././theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+        <link rel="stylesheet" href="../theme/css/main.css" type="text/css" />
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
         <!--[if lte IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie.css"/>
-                <script src=".././js/IE8.js" type="text/javascript"></script><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie.css"/>
+                <script src="../js/IE8.js" type="text/javascript"></script><![endif]-->
 
         <!--[if lt IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie6.css"/><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie6.css"/><![endif]-->
 
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href="../.">Wisdom Eludes Me </a></h1>
+                <h1><a href="../">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href=".././category/politics.html">politics</a></li>
-                
-                    <li ><a href=".././category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="../category/politics.html">politics</a></li>
+                                    <li ><a href="../category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
                 
-
             
 
-        
-        
-            <aside id="featured" class="body">
+                            <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href=".././do-you-get-referential-transparency.html">Do You Get Referential&nbsp;Transparency?</a></h1> 
+                    <h1 class="entry-title"><a href="../deploying-a-play-application-on-ubuntu.html">Deploying a Play Application on&nbsp;Ubuntu</a></h1> 
                     <footer class="post-info">
+        <abbr class="published" title="2013-03-28T00:00:00">
+                Thu 28 March 2013
+        </abbr>
+
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a><a href="../tag/play.html">play</a></p>
+</footer><!-- /.post-info --><p>The more I use the <a href="http://www.playframework.com">Play Web Framework</a>, the more I like it. The &#8220;dev mode&#8221; is great, compiling everything that&#8217;s changed on the fly, including the statically checked routes and templates. But sooner or later we want to deploy our app for&nbsp;reals.</p>
+<p>The <code>dist</code> target will package up your app into a zip file with a simple shell script to launch it. That&#8217;s fine as far as it goes, but of course I want to run it as a proper service that starts automatically when the machine boots and can be easily shutdown and restarted. My production <span class="caps">OS</span> of choice is Ubuntu. Let&#8217;s do&nbsp;this.</p>
+<h1>Upstart</h1>
+<p>I only learned about <a href="http://upstart.ubuntu.com">Upstart</a> recently while researching this problem. It&#8217;s essentially an improved version of the traditional System V init system. This discovery made me very glad I chose Ubuntu, as Upstart is both powerful and remarkably simple to use once you know the basics. The <a href="http://upstart.ubuntu.com/cookbook/">Upstart &#8220;cookbook&#8221;</a> might look a bit intimidating at first, but after a bit of playing around I found it was quite simple to do what I&nbsp;wanted.</p>
+<p>By the way, Ubuntu still has the traditional System V init thing as well. I was happily using that for ages without any idea that it had a whole other more advanced init system controlling it. This is because Debian still uses the System V init by default, so all Debian packages use System V, and Ubuntu doesn&#8217;t want to re-do all that&nbsp;work.</p>
+<h1>Steps</h1>
+<p>This is how I got my Play server running with Upstart. This was all done on Ubuntu 12.10 and seems to be working well so far. Obviously, there are a number of choices I&#8217;ve made that could be made differently, so this is not the only way to do&nbsp;it.</p>
+<h2>1. System user for&nbsp;Play</h2>
+<p>I wanted a user dedicated to running Play servers.&nbsp;Easy:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo adduser --system play
+</pre></div>
+
+
+<h2>2. Unzip your Play&nbsp;app</h2>
+<p>Just unzip your Play app somewhere. For this explanation, I&#8217;m going to assume it&#8217;s unzipped to <code>/play/myapp-1.0</code>.</p>
+<p>The <code>play</code> user will need to be able to write to the app&#8217;s&nbsp;directories:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo chown -R play:adm /play/myapp-1.0
+</pre></div>
+
+
+<h2>3. Create an Upstart configuration&nbsp;file</h2>
+<p>All Upstart &#8220;jobs&#8221; are defined by a file in <code>/etc/init</code> named <code>jobname.conf</code>. The &#8220;jobname&#8221; bit is what you call the job when starting it or checking its status or whatever. So let&#8217;s create a file <code>/etc/init/myapp.conf</code> as&nbsp;follows:</p>
+<div class="codehilite"><pre># Upstart configuration for myapp Play application
+
+description &quot;Magellan Config Server&quot;
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+setuid play
+
+console log
+
+env PLAY_DIR=/play/myapp-1.0
+env JAVA_HOME=/usr/lib/jvm/jre1.7.0_17
+
+exec $JAVA_HOME/bin/java -Dhttp.port=9001 -classpath $PLAY_DIR/lib/\* play.core.server.NettyServer $PLAY_DIR
+</pre></div>
+
+
+<p>All this stuff (known as <em>stanzas</em>) is described in the above mentioned Upstart cookbook, but I&#8217;ll go through it&nbsp;briefly.</p>
+<p>The <code>start on</code>/<code>stop on</code> lines indicate that these actions are triggered by changes in the system&#8217;s runlevel. Upstart uses runlevels just like System V, and on Ubuntu levels 2 through 5 are all the same. There are many events that can be used to trigger start and stop, but for a standalone daemon process, these do the&nbsp;job.</p>
+<p>The <code>setuid</code> stanza means the job will be executed as the specified user instead of root. This seems like a simple thing, but you&#8217;d be amazed how fiddly it can be to do this via traditional means if you need to pass environment variables&nbsp;through.</p>
+<p>The <code>console log</code> stanza means that stdout and stderr are redirected to <code>/var/log/upstart/myapp.log</code>. This was useful when debugging why my job wasn&#8217;t starting. I&#8217;m going to change it to <code>console none</code> on my server as I no longer need this&nbsp;log.</p>
+<p>I&#8217;m just using the <code>env</code> stanzas to break out the path settings. There&#8217;s seems to be a whole lot more they can be used for in Upstart, but I haven&#8217;t needed to worry about that&nbsp;yet.</p>
+<p>The <code>exec</code> stanza specifies the command to run to run the job. This is basically the command from the <code>start</code> script that Play provides for us. I&#8217;ve just replaced the explicit listing of all the jars with the newer classpath wildcard feature, and specified the port for Play to&nbsp;use.</p>
+<h2>4. Start&nbsp;it</h2>
+<p>Upstart jobs are controlled by the <code>initctl</code> command. But there are various alias commands to save some typing. For example, <code>sudo start foo</code> is the same as <code>sudo initctl start foo</code>. So, let&#8217;s start our Play&nbsp;app:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo start myapp
+</pre></div>
+
+
+<p>Hopefully, you&#8217;ll be rewarded&nbsp;with:</p>
+<div class="codehilite"><pre>myapp start/running, process 1234
+</pre></div>
+
+
+<p>You can confirm&nbsp;with:</p>
+<div class="codehilite"><pre><span class="gp">$</span> ps -p 1234
+</pre></div>
+
+
+<p>If something went wrong, check <code>/var/log/upstart/myapp.log</code> for&nbsp;clues.</p>
+<p>Some other&nbsp;commands:</p>
+<div class="codehilite"><pre><span class="gp">$</span> sudo status myapp
+<span class="gp">$</span> sudo stop myapp
+<span class="gp">$</span> sudo restart myapp
+<span class="gp">$</span> sudo initctl list  <span class="c"># list all Upstart jobs</span>
+</pre></div>
+
+
+<h1>Port&nbsp;80</h1>
+<p>Of course, we like our <span class="caps">HTTP</span> servers to use port 80 (and or 443). There are a few ways this can be arranged, here&#8217;s the ones I know&nbsp;of:</p>
+<ul>
+<li>Run as root (don&#8217;t do&nbsp;this)</li>
+<li>Redirect port 80 using the&nbsp;firewall</li>
+<li>Use <a href="http://en.wikipedia.org/wiki/Authbind">authbind(1)</a></li>
+<li>Use a <span class="caps">HTTP</span> reverse proxy. I&#8217;m experimenting with <a href="http://nginx.org">nginx</a></li>
+</ul>
+<p>I&#8217;ve used authbind, it&#8217;s pretty straight-forward and works with the <span class="caps">JVM</span>. It&#8217;s good when you just have a single server that you want on port&nbsp;80/443.</p>
+<p>As Play apps run standalone with their own embedded Netty web server, an <span class="caps">HTTP</span> reverse proxy seems like it will prove quite useful. If you have a bunch of Play apps using different ports, you can use the proxy to make them all appear as part of a single &#8220;server&#8221; on port 80 (distinguished by something like a path in the <span class="caps">URL</span> or by the <span class="caps">HTTP</span> &#8220;host&#8221; header). Nginx (pronounced &#8220;Engine-X&#8221;) can also do simple load balancing, which should allow us to leverage Play&#8217;s stateless style. I&#8217;m still experimenting with these features at this&nbsp;stage.</p>
+<h1>Conclusion</h1>
+<p>I was pleasantly surprised at how easy it was to get my Play app up and running as an Ubuntu service. I had to spend some time learning Upstart, but it was well worth it. Upstart takes care housekeeping such as tracking the service&#8217;s <span class="caps">PID</span> for you. Compare the short configuration file above to the System V script included with Ubuntu&#8217;s Tomcat 7 package, which weighs in at 296&nbsp;lines!</p><p>There are <a href="../deploying-a-play-application-on-ubuntu.html#disqus_thread">comments</a>.</p>                </article>
+                            </aside><!-- /#featured -->
+                            <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+                                                
+
+                 
+                        <li><article class="hentry">    
+                <header>
+                    <h1><a href="../do-you-get-referential-transparency.html" rel="bookmark"
+                           title="Permalink to Do You Get Referential Transparency?">Do You Get Referential&nbsp;Transparency?</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
         <abbr class="published" title="2012-07-15T00:00:00">
                 Sun 15 July 2012
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info --><p>Do you get referential transparency? I mean, really <em>get</em> it? I thought I did, but I recently gained a deeper appreciation for what it&nbsp;means.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>Do you get referential transparency? I mean, really <em>get</em> it? I thought I did, but I recently gained a deeper appreciation for what it&nbsp;means.</p>
 <p>Referential transparency is also commonly referred to as &#8220;pure&#8221; functional programming. I understood this to mean that the code lacked side effects like performing I/O or mutating state, and this seems to be a common understanding. But referential transparency can actually be defined quite precisely and succinctly (although I believe agreement with this definition would be far from&nbsp;universal):</p>
 <blockquote>
-<p>If replacing expression x by its value produces the same behaviour, then x is referentially&nbsp;transparent</p>
-</blockquote>
-<p>Sounds simple enough. But notice that this definition contains no reference to I/O or state or any of the things usually associated with lack of referential transparency; keep that in mind. The above definition is the <em>entire</em> definition: if replacing an expression by its value produces no change in program behaviour, then you have referential transparency, <em>regardless of what the behaviour is</em>.</p>
-<p>Now, consider the following example, using Scala (you will need to understand <a href="http://docs.scala-lang.org/tutorials/FAQ/yield.html">how Scala translates</a> <code>for</code> syntax to <code>map</code> and <code>flatMap</code> method calls to follow&nbsp;this):</p>
-<div class="codehilite"><pre><span class="k">final</span> <span class="k">class</span> <span class="nc">Writer</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="k">val</span> <span class="n">value</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="k">val</span> <span class="n">log</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="o">{</span>
+<p>If replacing expression x by its value produces the same behaviour, then x is referentially ...</p></blockquote>
+                <a class="readmore" href="../do-you-get-referential-transparency.html">read more</a>
+                <p>There are <a href="../do-you-get-referential-transparency.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+                            
 
-  <span class="k">def</span> <span class="n">map</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">f</span><span class="o">(</span><span class="n">value</span><span class="o">),</span> <span class="n">log</span><span class="o">)</span>
-
-  <span class="k">def</span> <span class="n">flatMap</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="nc">Writer</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
-    <span class="k">val</span> <span class="n">b</span> <span class="k">=</span> <span class="n">f</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
-    <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">b</span><span class="o">.</span><span class="n">value</span><span class="o">,</span> <span class="n">log</span> <span class="o">++</span> <span class="n">b</span><span class="o">.</span><span class="n">log</span><span class="o">)</span>
-  <span class="o">}</span>
-
-<span class="o">}</span>
-
-<span class="k">object</span> <span class="nc">Writer</span> <span class="o">{</span>
-
-  <span class="cm">/** Log a message without a value */</span>
-  <span class="k">def</span> <span class="n">log</span><span class="o">(</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">((),</span> <span class="nc">Vector</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span>
-
-  <span class="cm">/** Log a message with a value */</span>
-  <span class="k">def</span> <span class="n">logv</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">msg</span><span class="k">:</span> <span class="kt">String</span><span class="o">)(</span><span class="n">a</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="nc">Vector</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span>
-
-  <span class="k">def</span> <span class="n">apply</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">a</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Writer</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
-
-<span class="o">}</span>
-</pre></div>
-
-
-<p>The above is a very basic writer monad. Let&#8217;s put it to use in a silly&nbsp;example:</p>
-<div class="codehilite"><pre><span class="k">import</span> <span class="nn">Writer.</span><span class="o">{</span> <span class="n">log</span><span class="o">,</span> <span class="n">logv</span> <span class="o">}</span>
-
-<span class="cm">/**</span>
-<span class="cm"> * Add one to a number and log a message.</span>
-<span class="cm"> * Referentially transparent.</span>
-<span class="cm"> */</span>
-<span class="k">def</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="n">i</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=</span>  <span class="n">logv</span><span class="o">(</span><span class="s">&quot;added 1 to &quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">)(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">log1</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;before&quot;</span><span class="o">)</span>
-  <span class="n">n1</span> <span class="k">&lt;-</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
-  <span class="n">n2</span> <span class="k">&lt;-</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
-  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;after&quot;</span><span class="o">)</span>
-<span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span><span class="o">)</span>
-</pre></div>
-
-
-<p>All the code so far has been pure functional, that is, referentially transparent. What we have done is made an ordinary value, <code>log1</code> that produces an integer value, while also accumulating logging messages, which could be thought of as really simple instructions to &#8220;log this message&#8221;. At some point we decide we want to display these log messages to the user, so we write a method to &#8220;run&#8221; the accumulated logging instructions, which requires a non-referentially transparent&nbsp;function:</p>
-<div class="codehilite"><pre><span class="cm">/**</span>
-<span class="cm"> * Side-effect! Prints log messages to stdout.</span>
-<span class="cm"> * Not referentially transparent.</span>
-<span class="cm"> */</span>
-<span class="k">def</span> <span class="n">run</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">w</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">A</span><span class="o">])</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=</span> <span class="o">{</span>
-  <span class="n">w</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">printf</span><span class="o">(</span><span class="s">&quot;*log* %s%n&quot;</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-  <span class="n">w</span><span class="o">.</span><span class="n">value</span>
-<span class="o">}</span>
-</pre></div>
-
-
-<p>The output of <code>printf("result1 = %d%n", run(log1))</code> is:</p>
-<div class="codehilite"><pre>*log* before
-*log* added 1 to 41
-*log* added 1 to 41
-*log* after
-result1 = 84
-</pre></div>
-
-
-<p>as expected. Notice that the <code>addOneAndLog(41)</code> expression is repeated twice. What if we replace that with a single&nbsp;value:</p>
-<div class="codehilite"><pre><span class="k">val</span> <span class="n">add</span> <span class="k">=</span> <span class="n">addOneAndLog</span><span class="o">(</span><span class="mi">41</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">log2</span><span class="k">:</span> <span class="kt">Writer</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;before&quot;</span><span class="o">)</span>
-  <span class="n">n1</span> <span class="k">&lt;-</span> <span class="n">add</span>
-  <span class="n">n2</span> <span class="k">&lt;-</span> <span class="n">add</span>
-  <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">log</span><span class="o">(</span><span class="s">&quot;after&quot;</span><span class="o">)</span>
-<span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span><span class="o">)</span>
-</pre></div>
-
-
-<p>What log messages would you expect from <code>printf("result2 = %d%n", run(log2))</code>? We get exactly the same log messages as for <code>log1</code>. This is because the expression we factored out was referentially transparent: replacing it by its final value changes absolutely nothing about how the code&nbsp;behaves.</p>
-<p>I thought I had a good handle on all this functional stuff, when I made a change like that between <code>log1</code> and <code>log2</code> to some production code. I was surprised to see output still showing up twice, and it took me a few minutes to figure out I was seeing referentially transparency in action. This made me realise that so many of my expectations are still conditioned by years of programming with imperative, side-effecting code. Perhaps when I find the <em>lack</em> of referential transparency surprising I can officially call myself a functional&nbsp;programmer.</p>
-<p>One very interesting thing to note is that the need for I/O in no way precludes the use of referentially transparent code. Some might say at this point &#8220;but you&#8217;re cheating, the run function is not referentially transparent!&#8221;. Yes, all referentially transparent code will end up being translated to a series of side effects in order to run on a real machine. The fact that some of this translation happens in the same language used to write our pure code is a detail of no great&nbsp;significance.</p>
-<p>But if side effects are always unavoidable at some point, why bother worrying about referential transparency at all? Well, my experience has been that after maximising pure code, you&#8217;ll find that whatever side effecting code you need tends to be very simple and self-contained, and does not get in the way of composition the way it would in a &#8220;traditional&#8221; imperative program. The composition of large programs from smaller programs is the power that referential transparency gives you. Of course, we&#8217;ve come up with many way to compose bits of code together, but they all suck compared to referential transparency. I think that the relative simplicity of the concept (notwithstanding occasional surprises for those of us new to it) sometimes blinds us to just how powerful it really&nbsp;is.</p>
-<p>If my toy logging example hasn&#8217;t convinced you that this is a good way to write programs, perhaps a slightly (only slightly) less trivial example will help. Like many ideas, the benefits only really become apparent when you start scaling up. <a href="https://gist.github.com/3114349">This gist</a> contains a program that interleaves the following: reading from the console, writing to the console, and reading from the file system, all driven from code that is referentially&nbsp;transparent.</p><p>There are <a href=".././do-you-get-referential-transparency.html#disqus_thread">comments</a>.</p>
-                </article>
-                
-            </aside><!-- /#featured -->
-            
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
-            
-        
-        
-        
-            
-
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././applying-applicative-functors-in-scala.html" rel="bookmark"
+                    <h1><a href="../applying-applicative-functors-in-scala.html" rel="bookmark"
                            title="Permalink to Applying Applicative Functors in Scala">Applying Applicative Functors in&nbsp;Scala</a></h1>
                 </header>
                 
@@ -174,32 +172,22 @@ result1 = 84
                 Fri 02 September 2011
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>A chap named ittayd has written a nice <a href="http://www.tikalk.com/incubator/blog/functional-programming-scala-rest-us">gentle tutorial on functional programming in Scala</a>. My only minor complaint is that he calls the applicative functor &#8220;sequential application&#8221; function <code>apply</code>. While this is a logical choice, in Scala <code>apply</code> is used everywhere to implement plain old function application, so it could lead to confusion. I think it&#8217;s better to call it <code>&lt;*&gt;</code>, as in Haskell. Read&nbsp;on.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>A chap named ittayd has written a nice <a href="http://www.tikalk.com/incubator/blog/functional-programming-scala-rest-us">gentle tutorial on functional programming in Scala</a>. My only minor complaint is that he calls the applicative functor &#8220;sequential application&#8221; function <code>apply</code>. While this is a logical choice, in Scala <code>apply</code> is used everywhere to implement plain old function application, so it could lead to confusion. I think it&#8217;s better to call it <code>&lt;*&gt;</code>, as in Haskell. Read&nbsp;on.</p>
 <p>I found the tutorial interesting because it talks a bit about applicative functors, and how to give them a nice syntax in Scala. The one thing that has bugged me about applicatives is ...</p>
-                <a class="readmore" href=".././applying-applicative-functors-in-scala.html">read more</a>
-                <p>There are <a href=".././applying-applicative-functors-in-scala.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../applying-applicative-functors-in-scala.html">read more</a>
+                <p>There are <a href="../applying-applicative-functors-in-scala.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././a-variation-on-scalas-either-type.html" rel="bookmark"
+                    <h1><a href="../a-variation-on-scalas-either-type.html" rel="bookmark"
                            title="Permalink to A Variation on Scala’s Either Type">A Variation on Scala&#8217;s Either&nbsp;Type</a></h1>
                 </header>
                 
@@ -209,17 +197,12 @@ result1 = 84
                 Tue 03 May 2011
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>I&#8217;ve been using Scala&#8217;s <code>Either</code> type a bit recently, and found a
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>I&#8217;ve been using Scala&#8217;s <code>Either</code> type a bit recently, and found a
 couple of minor annoyances with it. So as a learning exercise I tried to
 make a variation of <code>Either</code>, and this is what I came up with. I also
 wanted to experiment with syntax a little. See what you&nbsp;think.</p>
@@ -227,20 +210,15 @@ wanted to experiment with syntax a little. See what you&nbsp;think.</p>
 It places no meaning at all on left or right, but 99% of its uses in practice
 involve putting normal, expected values in right, and errors or other
 &#8220;exceptional&#8221; values in left ...</p>
-                <a class="readmore" href=".././a-variation-on-scalas-either-type.html">read more</a>
-                <p>There are <a href=".././a-variation-on-scalas-either-type.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../a-variation-on-scalas-either-type.html">read more</a>
+                <p>There are <a href="../a-variation-on-scalas-either-type.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././ceylon-interesting-for-the-wrong-reasons.html" rel="bookmark"
+                    <h1><a href="../ceylon-interesting-for-the-wrong-reasons.html" rel="bookmark"
                            title="Permalink to Ceylon: Interesting For The Wrong Reasons">Ceylon: Interesting For The Wrong&nbsp;Reasons</a></h1>
                 </header>
                 
@@ -250,32 +228,22 @@ involve putting normal, expected values in right, and errors or other
                 Fri 15 April 2011
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/ceylon.html">ceylon</a><a href=".././tag/flameage.html">flameage</a><a href=".././tag/java.html">java</a><a href=".././tag/scala.html">scala</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/ceylon.html">ceylon</a><a href="../tag/flameage.html">flameage</a><a href="../tag/java.html">java</a><a href="../tag/scala.html">scala</a></p>
+</footer><!-- /.post-info -->                <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
 <p>Gavin King&#8217;s slides provide a fascinating insight into the ...</p>
-                <a class="readmore" href=".././ceylon-interesting-for-the-wrong-reasons.html">read more</a>
-                <p>There are <a href=".././ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../ceylon-interesting-for-the-wrong-reasons.html">read more</a>
+                <p>There are <a href="../ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././scalas-missing-monad.html" rel="bookmark"
+                    <h1><a href="../scalas-missing-monad.html" rel="bookmark"
                            title="Permalink to Scala’s Missing Monad">Scala&#8217;s Missing&nbsp;Monad</a></h1>
                 </header>
                 
@@ -285,17 +253,12 @@ involve putting normal, expected values in right, and errors or other
                 Thu 30 September 2010
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/scala.html">scala</a><a href=".././tag/haskell.html">haskell</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/programming.html">programming</a><a href="../tag/scala.html">scala</a><a href="../tag/haskell.html">haskell</a></p>
+</footer><!-- /.post-info -->                <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
 recently. An issue I found myself running into quite often is this: say you
 have a function that sometimes returns no results (e.g. looking up a key in a
 map). A common way to deal with that in Scala is to return an <code>Option</code>:</p>
@@ -309,20 +272,15 @@ map). A common way to deal with that in Scala is to return an <code>Option</code
 
 
 <p>What ...</p>
-                <a class="readmore" href=".././scalas-missing-monad.html">read more</a>
-                <p>There are <a href=".././scalas-missing-monad.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../scalas-missing-monad.html">read more</a>
+                <p>There are <a href="../scalas-missing-monad.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././some-simple-scala-null-tricks.html" rel="bookmark"
+                    <h1><a href="../some-simple-scala-null-tricks.html" rel="bookmark"
                            title="Permalink to Some Simple Scala Null Tricks">Some Simple Scala Null&nbsp;Tricks</a></h1>
                 </header>
                 
@@ -332,17 +290,12 @@ map). A common way to deal with that in Scala is to return an <code>Option</code
                 Wed 16 December 2009
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/programming.html">programming</a><a href=".././tag/scala.html">scala</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>Scala code often needs to deal with null references, unfortunately. Such is
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/programming.html">programming</a><a href="../tag/scala.html">scala</a></p>
+</footer><!-- /.post-info -->                <p>Scala code often needs to deal with null references, unfortunately. Such is
 the price of Java interoperability. One of my favourite utility methods&nbsp;is:</p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="o">?[</span><span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span><span class="o">](</span><span class="n">ref</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">ref</span> <span class="n">eq</span> <span class="kc">null</span><span class="o">)</span> <span class="nc">None</span> <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">ref</span><span class="o">)</span>
@@ -359,20 +312,15 @@ accepts non-reference values as&nbsp;well.</p>
 <div class="codehilite"><pre><span class="k">object</span> <span class="nc">NotNull</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span><span class="o">](</span><span class="n">ref</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span>
       <span class="k">if</span> <span class="o">(</span><span class="n">ref ...</span></pre></div>
-                <a class="readmore" href=".././some-simple-scala-null-tricks.html">read more</a>
-                <p>There are <a href=".././some-simple-scala-null-tricks.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../some-simple-scala-null-tricks.html">read more</a>
+                <p>There are <a href="../some-simple-scala-null-tricks.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././project-euler-problem-8.html" rel="bookmark"
+                    <h1><a href="../project-euler-problem-8.html" rel="bookmark"
                            title="Permalink to Project Euler Problem 8">Project Euler Problem&nbsp;8</a></h1>
                 </header>
                 
@@ -382,17 +330,12 @@ accepts non-reference values as&nbsp;well.</p>
                 Mon 01 June 2009
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a><a href=".././tag/project-euler.html">project euler</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>I guess I should warn that these Project Euler posts have <strong>spoilers</strong>, in case you want to try the problems yourself ☺. My Scala solution to <a href="http://projecteuler.net/problem=8">problem 8</a>:</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a><a href="../tag/project-euler.html">project euler</a></p>
+</footer><!-- /.post-info -->                <p>I guess I should warn that these Project Euler posts have <strong>spoilers</strong>, in case you want to try the problems yourself ☺. My Scala solution to <a href="http://projecteuler.net/problem=8">problem 8</a>:</p>
 <div class="codehilite"><pre><span class="k">val</span> <span class="n">input</span> <span class="k">=</span> <span class="s">&quot;73167176531330624919225119674426574742355349194934&quot;</span> <span class="o">+</span>
   <span class="s">&quot;96983520312774506326239578318016984801869478851843&quot;</span> <span class="o">+</span>
   <span class="s">&quot;85861560789112949495459501737958331952853208805511&quot;</span> <span class="o">+</span>
@@ -423,20 +366,15 @@ accepts non-reference values as&nbsp;well.</p>
     <span class="k">def</span> <span class="n">rec</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Stream</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="n">cons</span><span class="o">(</span><span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">),</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">digits</span><span class="o">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">5</span><span class="o">)</span> <span class="nc">Stream</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="n">rec</span><span class="o">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">))</span>
     <span class="nc">Stream</span><span class="o">.</span><span class="n">cons</span><span class="o">(</span><span class="n">mult</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">rec ...</span></pre></div>
-                <a class="readmore" href=".././project-euler-problem-8.html">read more</a>
-                <p>There are <a href=".././project-euler-problem-8.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../project-euler-problem-8.html">read more</a>
+                <p>There are <a href="../project-euler-problem-8.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././project-euler-in-scala.html" rel="bookmark"
+                    <h1><a href="../project-euler-in-scala.html" rel="bookmark"
                            title="Permalink to Project Euler in Scala">Project Euler in&nbsp;Scala</a></h1>
                 </header>
                 
@@ -446,79 +384,49 @@ accepts non-reference values as&nbsp;well.</p>
                 Mon 01 June 2009
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/scala.html">scala</a><a href=".././tag/programming.html">programming</a><a href=".././tag/project-euler.html">project euler</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p><a href="http://projecteuler.net/">Project Euler</a> is a bunch of mathematical/programming problems. I&#8217;ve been trying to improve my <a href="http://www.scala-lang.org/">Scala</a> skills by using it on some of the Euler problems. I&#8217;m trying to use functional programming styles as much as possible. My solutions definitely haven&#8217;t been very optimized, but I am learning, which is the&nbsp;aim.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a><a href="../tag/project-euler.html">project euler</a></p>
+</footer><!-- /.post-info -->                <p><a href="http://projecteuler.net/">Project Euler</a> is a bunch of mathematical/programming problems. I&#8217;ve been trying to improve my <a href="http://www.scala-lang.org/">Scala</a> skills by using it on some of the Euler problems. I&#8217;m trying to use functional programming styles as much as possible. My solutions definitely haven&#8217;t been very optimized, but I am learning, which is the&nbsp;aim.</p>
 <p><strong><a href="http://projecteuler.net/problem=1">Euler Problem&nbsp;1</a></strong></p>
 <blockquote>
 <p>If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.  Find the sum of all the multiples of 3 or 5 below ...</p></blockquote>
-                <a class="readmore" href=".././project-euler-in-scala.html">read more</a>
-                <p>There are <a href=".././project-euler-in-scala.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../project-euler-in-scala.html">read more</a>
+                <p>There are <a href="../project-euler-in-scala.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            </ol><!-- /#posts-list -->
-            
-                
-            
-            </section><!-- /#content -->
-        
-    
-
-
-        <section id="extras" class="body">
-        
-                <div class="blogroll">
+                            </ol><!-- /#posts-list -->
+                                                    </section><!-- /#content -->
+                    <section id="extras" class="body">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -529,6 +437,5 @@ accepts non-reference values as&nbsp;well.</p>
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

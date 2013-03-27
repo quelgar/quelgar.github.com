@@ -4,9 +4,8 @@
         <title>Ceylon: Interesting For The Wrong Reasons</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="ceylon-interesting-for-the-wrong-reasons.html" rel="bookmark"
+        <a href="./ceylon-interesting-for-the-wrong-reasons.html" rel="bookmark"
            title="Permalink to Ceylon: Interesting For The Wrong Reasons">Ceylon: Interesting For The Wrong&nbsp;Reasons</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,17 +40,12 @@
                 Fri 15 April 2011
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/ceylon.html">ceylon</a><a href="./tag/flameage.html">flameage</a><a href="./tag/java.html">java</a><a href="./tag/scala.html">scala</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
+</footer><!-- /.post-info -->      <p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
 <p>Gavin King&#8217;s slides provide a fascinating insight into the kind of thinking that remains so dominant in the Java community. Gavin King is well known in the Java world as the inventor/leader of <a href="http://www.hibernate.org/">Hibernate</a> and various other JBoss projects. He certainly knows Java inside out, and his list of &#8220;frustrations&#8221; is astute, if incomplete. While I haven&#8217;t dug into all the details so far revealed about Ceylon, but it seems likely that they&#8217;ll succeed in their goal of creating &#8220;a better Java&#8221;. If given the choice between using Java and Ceylon, I could certainly see myself choosing Ceylon. But Ceylon is a terrible idea. The problem is that they are treating the symptoms, not the disease; and they&#8217;re repeating exactly the same mistakes that resulted in them finally hitting a dead-end with&nbsp;Java.</p>
 <p>Possibly the best outcome of Ceylon is that it emphatically refutes the argument that &#8220;Java is all we need&#8221;. Few have put more hard labour into trying to make Java feasible than Gavin King and the JBoss folks. They and a <a href="http://apache.org">few</a> <a href="http://www.springsource.org/">others</a> have spent the last decade or so producing a staggering number of bloated tools, libraries and frameworks in order to keep Java going. Don&#8217;t get me wrong, there&#8217;s a lot of extremely useful Java libraries out there, but there&#8217;s also a huge amount of guff that exists solely to compensate for the impracticality of the Java language. Ceylon is the &#8220;main-stream&#8221; admitting, finally, that not all problems can be solved <em>the Java way</em>: more frameworks, more libraries, more tools, more&nbsp;code.</p>
 <p>So Mr King and friends have finally hit the wall with Java. They&#8217;re a bit late to the party, but we should welcome them none the less. So why do I say Ceylon is a terrible idea? The short answer is: <a href="http://www.scala-lang.org/">Scala</a>. The long answer is, well, longer. My biased summary of the situation is this: after years of having to build more and more layers of increasingly baroque frameworks in order to make progress, they realise that they can no longer keep up with their competitors (C#) because Java the language is an unavoidable bottleneck. They identify certain essential abstractions that are needed to solve their immediate problems, and proceed to design a new language that provides those essential abstractions, while remaining as &#8220;familiar&#8221; as&nbsp;possible.</p>
@@ -86,8 +70,7 @@
 <p>I could very well be missing something, but this would seem like a problem that is right in Scala&#8217;s wheelhouse. Perhaps it may not be solved satisfactorily today, but it could done with far less effort than creating a whole new language (and new standard library, and new tool chain&hellip;). It is depressing to think of what these guys could achieve working with Scala instead of pouring resources into&nbsp;Ceylon.</p>
 <p>You may wonder, &#8220;if you think Scala is so good, then use it and be happy, why worry about Ceylon?&#8221; Well, I worry because I think Ceylon is worse than Scala, but it could win anyway. That actually seems to be the more common outcome in these situations. I would much prefer a world with Scala jobs in demand than one with Ceylon jobs in demand. So, yes, it&#8217;s all about me being selfish. I would say to all Scala fans: don&#8217;t be afraid to be a little selfish and evangelise for the better&nbsp;outcome.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -100,54 +83,37 @@
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -158,6 +124,5 @@
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

@@ -4,9 +4,8 @@
         <title>Scala’s Missing Monad</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="scalas-missing-monad.html" rel="bookmark"
+        <a href="./scalas-missing-monad.html" rel="bookmark"
            title="Permalink to Scala’s Missing Monad">Scala&#8217;s Missing&nbsp;Monad</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,17 +40,12 @@
                 Thu 30 September 2010
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/programming.html">programming</a><a href="./tag/scala.html">scala</a><a href="./tag/haskell.html">haskell</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
+</footer><!-- /.post-info -->      <p>I&#8217;ve been writing more and more pure functional code in both Scala and Java
 recently. An issue I found myself running into quite often is this: say you
 have a function that sometimes returns no results (e.g. looking up a key in a
 map). A common way to deal with that in Scala is to return an <code>Option</code>:</p>
@@ -111,7 +95,7 @@ the sequence function would have to be re-implemented over and over:
 <p>The good news is that Scala&#8217;s type system <em>can</em> express the monad type.
 And the better news is that some really smart people have already done all the
 work for us in a library called
-<a href="static" title="http://code.google.com/p/scalaz/">Scalaz</a>.
+<a href="" title="http://code.google.com/p/scalaz/">Scalaz</a>.
 So I had a look, and lo and behold there is the
 <a href="http://scalaz.googlecode.com/svn/continuous/latest/browse.sxr/scalaz/MA.scala.html#27505">sequence&nbsp;function</a></p>
 <div class="codehilite"><pre><span class="k">def</span> <span class="n">sequence</span><span class="o">[</span><span class="kt">N</span><span class="o">[</span><span class="k">_</span><span class="o">]</span>, <span class="kt">B</span><span class="o">](</span><span class="k">implicit</span> <span class="n">a</span><span class="k">:</span> <span class="kt">A</span> <span class="k">&lt;:</span><span class="kt">&lt;</span> <span class="kt">N</span><span class="o">[</span><span class="kt">B</span><span class="o">],</span>
@@ -134,8 +118,7 @@ code, you should be using Scalaz. Since all Scala programmers should be
 writing pure functional code, it follows that all Scala programmers should be
 using&nbsp;Scalaz!</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -148,54 +131,37 @@ using&nbsp;Scalaz!</p>
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -206,6 +172,5 @@ using&nbsp;Scalaz!</p>
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

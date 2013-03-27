@@ -4,9 +4,8 @@
         <title>Cocoa vs Haskell</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="cocoa-vs-haskell.html" rel="bookmark"
+        <a href="./cocoa-vs-haskell.html" rel="bookmark"
            title="Permalink to Cocoa vs Haskell">Cocoa vs&nbsp;Haskell</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,17 +40,12 @@
                 Fri 08 January 2010
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/programming.html">programming</a><a href="./tag/cocoa.html">cocoa</a><a href="./tag/haskell.html">haskell</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>So here&#8217;s the deal - if you want to write a Mac <span class="caps">GUI</span> app, you want to use the Cocoa framework. As a practical system for writing desktop <span class="caps">GUI</span> apps, the Cocoa stack simply has no equal anywhere. Part of what makes Cocoa so great is the Objective-C language, which adds a very flexible and dynamic <span class="caps">OOP</span> system on top of standard&nbsp;C.</p>
+</footer><!-- /.post-info -->      <p>So here&#8217;s the deal - if you want to write a Mac <span class="caps">GUI</span> app, you want to use the Cocoa framework. As a practical system for writing desktop <span class="caps">GUI</span> apps, the Cocoa stack simply has no equal anywhere. Part of what makes Cocoa so great is the Objective-C language, which adds a very flexible and dynamic <span class="caps">OOP</span> system on top of standard&nbsp;C.</p>
 <p>Objective-C turned out to be a great match for creating desktop GUIs. It&#8217;s obviously a general-purpose language, but for general programming it would be no where near my first choice. My first choice right now would be Haskell, even though I&#8217;m still a beginner and I pretty much suck at it. But I get why Haskell is so good (and so much&nbsp;fun).</p>
 <p>So if I want to write a Mac <span class="caps">GUI</span> app, can I use Haskell? I&#8217;ve had a play with <a href="http://hoc.sourceforge.net/"><span class="caps">HOC</span></a> which is a very neat bit of software that bridges Objective-C to Haskell. You can call Haskell from Objective-C and implement Objective-C classes in Haskell. There are some challenges trying to use <span class="caps">HOC</span> - it&#8217;s not exactly straightforward to get it up and running and integrated into your XCode project; and it&#8217;s under active, but slow, development and doesn&#8217;t have a stable release. But at a more fundamental level I&#8217;ve come to the conclusion that, while it&#8217;s very cool, <span class="caps">HOC</span> probably isn&#8217;t worth&nbsp;it.</p>
 <p>If you can get <span class="caps">HOC</span> working, you&#8217;ll have a full-blown bridge that lets you use Cocoa APIs from Haskell. But is that actually worthwhile? The things that Haskell excels at are basically useless when using Cocoa, which is completely based around stateful objects being mutated by events and messages. While you could have all your code - including the Cocoa <span class="caps">GUI</span> stuff - in Haskell, the <span class="caps">GUI</span> code will all be imperative using the <span class="caps">IO</span> monad. All the effort just gets you Objective-C with nicer&nbsp;syntax.</p>
@@ -87,8 +71,7 @@
 <p>Probably the biggest downside of this plain C approach vs <span class="caps">HOC</span> is that you can&#8217;t pass Objective-C objects to Haskell (well, you can, but they are not easy to use from Haskell, to say the least). So you have to convert whatever Objective-C data structures you&#8217;re using in the <span class="caps">GUI</span> to plain C types for interfacing with your Haskell APIs. Haskell wrappers for the <span class="caps">OS</span> X C APIs for CoreFoundation and the Objective-C runtime might make using Objective-C objects from Haskell feasible without a full language bridge, but I&#8217;m not sure about&nbsp;this.</p>
 <p>The <span class="caps">GHC</span> installer for Mac installs the bulk of <span class="caps">GHC</span> under &#8220;/Library/Frameworks/<span class="caps">GHC</span>.framework&#8221;, but I don&#8217;t think it actually works as a Mac framework. I could be doing something wrong, but adding it to XCode as a framework didn&#8217;t work (XCode just said it wasn&#8217;t found when I tried to build, from memory). It would be great if <span class="caps">GHC</span> could be made a fully-functional Mac framework, as we would no longer need to manually set include and lib search paths, or explicitly add every Haskell .a file to the project. But to make this useful, I think we&#8217;d need some automated way of building any Cabal package as a framework. I&#8217;m not sure if that&#8217;s&nbsp;feasible.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -101,54 +84,37 @@
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -159,6 +125,5 @@
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

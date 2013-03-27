@@ -4,9 +4,8 @@
         <title>Java’s clone mechanism is teh suq</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="./theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
@@ -20,30 +19,20 @@
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href=".">Wisdom Eludes Me </a></h1>
+                <h1><a href="./">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href="./category/politics.html">politics</a></li>
-                
-                    <li class="active"><a href="./category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="./category/politics.html">politics</a></li>
+                                    <li class="active"><a href="./category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
-        
-<section id="content" class="body">
+        <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="javas-clone-mechanism-is-teh-suq.html" rel="bookmark"
+        <a href="./javas-clone-mechanism-is-teh-suq.html" rel="bookmark"
            title="Permalink to Java’s clone mechanism is teh suq">Java&#8217;s clone mechanism is teh&nbsp;suq</a></h1>
-      
-    </header>
+          </header>
 
     <div class="entry-content">
       <footer class="post-info">
@@ -51,17 +40,12 @@
                 Mon 27 March 2006
         </abbr>
 
-        
-        <address class="vcard author">
+                <address class="vcard author">
                 By <a class="url fn" href="./author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href="./category/programming.html">programming</a>. </p>
+        <p>In <a href="./category/programming.html">programming</a>. </p>
 <p>tags: <a href="./tag/java.html">java</a><a href="./tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-      <p>Doing cloning properly in Java is way harder than it should be. I thought I knew all the traps, but recently found yet another. In a nutshell, making inner classes cloneable is almost always a bad idea. The reason is that inner classes have an internal reference to an instance of their enclosing class, which is implicitly final and can&#8217;t be changed as part of a clone. For&nbsp;example:</p>
+</footer><!-- /.post-info -->      <p>Doing cloning properly in Java is way harder than it should be. I thought I knew all the traps, but recently found yet another. In a nutshell, making inner classes cloneable is almost always a bad idea. The reason is that inner classes have an internal reference to an instance of their enclosing class, which is implicitly final and can&#8217;t be changed as part of a clone. For&nbsp;example:</p>
 <div class="codehilite"><pre><span class="kd">class</span> <span class="nc">Outer</span> <span class="kd">implements</span> <span class="n">Cloneable</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="n">Inner</span> <span class="n">inner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Inner</span><span class="o">();</span>
@@ -107,8 +91,8 @@
 
 
 <p>You&nbsp;get:</p>
-<div class="codehilite"><pre>1
-0
+<div class="codehilite"><pre><span class="mi">1</span>
+<span class="mi">0</span>
 </pre></div>
 
 
@@ -146,8 +130,8 @@
 
 
 <p>This gives the desired output&nbsp;of:</p>
-<div class="codehilite"><pre>0
-1
+<div class="codehilite"><pre><span class="mi">0</span>
+<span class="mi">1</span>
 </pre></div>
 
 
@@ -156,8 +140,7 @@
 <p>Another, possibly better, solution is to make <code>Inner</code> a standard (non-inner) class with an explicit, non-final reference to its <code>Outer</code> instance. Basically, do the inner class stuff by hand. Because the reference to the outer class isn&#8217;t final, it can be fixed up before returning from <code>clone()</code>. Of course, this lacks the convenience that was the motivation for inner classes in the first&nbsp;place.</p>
 <p><a href="http://adtmag.com/articles/2000/03/14/effective-javasolutions-for-implementing-dependable-clone-methods.aspx?sc_lang=en">More info on Java&#8217;s cloning woes</a>.</p>
     </div><!-- /.entry-content -->
-    
-    <div class="comments">
+        <div class="comments">
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
@@ -170,54 +153,37 @@
       </script>
     </div>
     
-
   </article>
 </section>
-
         <section id="extras" class="body">
-        
-                <div class="blogroll">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -228,6 +194,5 @@
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>

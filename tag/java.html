@@ -3,61 +3,45 @@
 <head>
         <title>Wisdom Eludes Me - java</title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" href=".././theme/css/main.css" type="text/css" />
-        <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
-        
-
+        <link rel="stylesheet" href="../theme/css/main.css" type="text/css" />
+                <link href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Wisdom Eludes Me Atom Feed" />
+                
         <!--[if IE]>
                 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
         <!--[if lte IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie.css"/>
-                <script src=".././js/IE8.js" type="text/javascript"></script><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie.css"/>
+                <script src="../js/IE8.js" type="text/javascript"></script><![endif]-->
 
         <!--[if lt IE 7]>
-                <link rel="stylesheet" type="text/css" media="all" href=".././css/ie6.css"/><![endif]-->
+                <link rel="stylesheet" type="text/css" media="all" href="../css/ie6.css"/><![endif]-->
 
 </head>
 
 <body id="index" class="home">
-
         <header id="banner" class="body">
-                <h1><a href="../.">Wisdom Eludes Me </a></h1>
+                <h1><a href="../">Wisdom Eludes Me </a></h1>
                 <nav><ul>
-                
-                
-                
-                
-                
-                    <li ><a href=".././category/politics.html">politics</a></li>
-                
-                    <li ><a href=".././category/programming.html">programming</a></li>
-                
-                </ul></nav>
+                                                                                                    <li ><a href="../category/politics.html">politics</a></li>
+                                    <li ><a href="../category/programming.html">programming</a></li>
+                                </ul></nav>
         </header><!-- /#banner -->
                 
-
             
 
-        
-        
-            <aside id="featured" class="body">
+                            <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href=".././ceylon-interesting-for-the-wrong-reasons.html">Ceylon: Interesting For The Wrong&nbsp;Reasons</a></h1> 
+                    <h1 class="entry-title"><a href="../ceylon-interesting-for-the-wrong-reasons.html">Ceylon: Interesting For The Wrong&nbsp;Reasons</a></h1> 
                     <footer class="post-info">
         <abbr class="published" title="2011-04-15T00:00:00">
                 Fri 15 April 2011
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/ceylon.html">ceylon</a><a href=".././tag/flameage.html">flameage</a><a href=".././tag/java.html">java</a><a href=".././tag/scala.html">scala</a></p>
-
-
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/ceylon.html">ceylon</a><a href="../tag/flameage.html">flameage</a><a href="../tag/java.html">java</a><a href="../tag/scala.html">scala</a></p>
 </footer><!-- /.post-info --><p>A couple of days ago, Gavin King announced that he is leading a team at RedHat that&#8217;s creating a new <span class="caps">JVM</span> language called Ceylon. See <a href="http://in.relation.to/19161.lace">here</a> for most of what is known so far. The stated motivation, in a nutshell is that they like Java very much, but it has deficiencies that are preventing progress in key areas, and they are generally feeling &#8220;frustrated&#8221;. They don&#8217;t have a complete compiler yet, but they&#8217;re working on it, and I get the impression RedHat is pretty serious about&nbsp;it.</p>
 <p>Gavin King&#8217;s slides provide a fascinating insight into the kind of thinking that remains so dominant in the Java community. Gavin King is well known in the Java world as the inventor/leader of <a href="http://www.hibernate.org/">Hibernate</a> and various other JBoss projects. He certainly knows Java inside out, and his list of &#8220;frustrations&#8221; is astute, if incomplete. While I haven&#8217;t dug into all the details so far revealed about Ceylon, but it seems likely that they&#8217;ll succeed in their goal of creating &#8220;a better Java&#8221;. If given the choice between using Java and Ceylon, I could certainly see myself choosing Ceylon. But Ceylon is a terrible idea. The problem is that they are treating the symptoms, not the disease; and they&#8217;re repeating exactly the same mistakes that resulted in them finally hitting a dead-end with&nbsp;Java.</p>
 <p>Possibly the best outcome of Ceylon is that it emphatically refutes the argument that &#8220;Java is all we need&#8221;. Few have put more hard labour into trying to make Java feasible than Gavin King and the JBoss folks. They and a <a href="http://apache.org">few</a> <a href="http://www.springsource.org/">others</a> have spent the last decade or so producing a staggering number of bloated tools, libraries and frameworks in order to keep Java going. Don&#8217;t get me wrong, there&#8217;s a lot of extremely useful Java libraries out there, but there&#8217;s also a huge amount of guff that exists solely to compensate for the impracticality of the Java language. Ceylon is the &#8220;main-stream&#8221; admitting, finally, that not all problems can be solved <em>the Java way</em>: more frameworks, more libraries, more tools, more&nbsp;code.</p>
@@ -81,27 +65,18 @@
 <p>But I guess I should mention that the number one technical problem that we simply can&#8217;t solve to our satisfaction in Java - or in any other existing <span class="caps">JVM</span> language - is the problem of defining user interfaces and structured data using a typesafe, hierarchical&nbsp;syntax.</p>
 </blockquote>
 <p>I could very well be missing something, but this would seem like a problem that is right in Scala&#8217;s wheelhouse. Perhaps it may not be solved satisfactorily today, but it could done with far less effort than creating a whole new language (and new standard library, and new tool chain&hellip;). It is depressing to think of what these guys could achieve working with Scala instead of pouring resources into&nbsp;Ceylon.</p>
-<p>You may wonder, &#8220;if you think Scala is so good, then use it and be happy, why worry about Ceylon?&#8221; Well, I worry because I think Ceylon is worse than Scala, but it could win anyway. That actually seems to be the more common outcome in these situations. I would much prefer a world with Scala jobs in demand than one with Ceylon jobs in demand. So, yes, it&#8217;s all about me being selfish. I would say to all Scala fans: don&#8217;t be afraid to be a little selfish and evangelise for the better&nbsp;outcome.</p><p>There are <a href=".././ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>
-                </article>
-                
-            </aside><!-- /#featured -->
-            
-                <section id="content" class="body">
+<p>You may wonder, &#8220;if you think Scala is so good, then use it and be happy, why worry about Ceylon?&#8221; Well, I worry because I think Ceylon is worse than Scala, but it could win anyway. That actually seems to be the more common outcome in these situations. I would much prefer a world with Scala jobs in demand than one with Ceylon jobs in demand. So, yes, it&#8217;s all about me being selfish. I would say to all Scala fans: don&#8217;t be afraid to be a little selfish and evangelise for the better&nbsp;outcome.</p><p>There are <a href="../ceylon-interesting-for-the-wrong-reasons.html#disqus_thread">comments</a>.</p>                </article>
+                            </aside><!-- /#featured -->
+                            <section id="content" class="body">
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
-            
-        
-        
-        
-            
+                                                
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././more-thoughts-on-apple-and-java.html" rel="bookmark"
+                    <h1><a href="../more-thoughts-on-apple-and-java.html" rel="bookmark"
                            title="Permalink to More Thoughts on Apple and Java">More Thoughts on Apple and&nbsp;Java</a></h1>
                 </header>
                 
@@ -111,17 +86,12 @@
                 Wed 27 October 2010
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/apple.html">apple</a><a href=".././tag/speculation.html">speculation</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>A few more points that occurred to me, following up on my last&nbsp;post.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/apple.html">apple</a><a href="../tag/speculation.html">speculation</a></p>
+</footer><!-- /.post-info -->                <p>A few more points that occurred to me, following up on my last&nbsp;post.</p>
 <h1>Whither the&nbsp;Mouse?</h1>
 <p>Since its inception in 1984, the Mac user interface has obviously been
 designed for desktop computers with a mouse and a keyboard. When notebook
@@ -130,20 +100,15 @@ mouse everywhere, or without even a flat, stable surface to put the mouse on,
 they had to emulate the mouse as best they could. This may now be&nbsp;reversing.</p>
 <p>In the announcement of Mac <span class="caps">OS</span> X Lion, there was great
 emphasis placed on the ...</p>
-                <a class="readmore" href=".././more-thoughts-on-apple-and-java.html">read more</a>
-                <p>There are <a href=".././more-thoughts-on-apple-and-java.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../more-thoughts-on-apple-and-java.html">read more</a>
+                <p>There are <a href="../more-thoughts-on-apple-and-java.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././java-and-the-mac.html" rel="bookmark"
+                    <h1><a href="../java-and-the-mac.html" rel="bookmark"
                            title="Permalink to Java and the Mac">Java and the&nbsp;Mac</a></h1>
                 </header>
                 
@@ -153,31 +118,21 @@ emphasis placed on the ...</p>
                 Sat 23 October 2010
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/apple.html">apple</a><a href=".././tag/speculation.html">speculation</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>So Apple has quietly announced that it is <a href="http://developer.apple.com/library/mac/#releasenotes/Java/JavaSnowLeopardUpdate3LeopardUpdate8RN/NewandNoteworthy/NewandNoteworthy.html%23//apple_ref/doc/uid/TP40010380-CH4-SW1">deprecating its support for Java on the Mac</a>. The wording was (not uncharacteristically for situations like this) a bit vague on the details of what this means. I think two things are definite: 1) Apple will continue to support Java 6 on Snow Leopard until it reaches end of life; which I think happens when the <span class="caps">OS</span> <em>after</em> Lion is publicly released. 2) Apple will not port Java 7+ to the Mac. The main unresolved question is whether Java 6 will be supported on Lion. My guess is that it will be ...</p>
-                <a class="readmore" href=".././java-and-the-mac.html">read more</a>
-                <p>There are <a href=".././java-and-the-mac.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/apple.html">apple</a><a href="../tag/speculation.html">speculation</a></p>
+</footer><!-- /.post-info -->                <p>So Apple has quietly announced that it is <a href="http://developer.apple.com/library/mac/#releasenotes/Java/JavaSnowLeopardUpdate3LeopardUpdate8RN/NewandNoteworthy/NewandNoteworthy.html%23//apple_ref/doc/uid/TP40010380-CH4-SW1">deprecating its support for Java on the Mac</a>. The wording was (not uncharacteristically for situations like this) a bit vague on the details of what this means. I think two things are definite: 1) Apple will continue to support Java 6 on Snow Leopard until it reaches end of life; which I think happens when the <span class="caps">OS</span> <em>after</em> Lion is publicly released. 2) Apple will not port Java 7+ to the Mac. The main unresolved question is whether Java 6 will be supported on Lion. My guess is that it will be ...</p>
+                <a class="readmore" href="../java-and-the-mac.html">read more</a>
+                <p>There are <a href="../java-and-the-mac.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././logging-vs-string-construction.html" rel="bookmark"
+                    <h1><a href="../logging-vs-string-construction.html" rel="bookmark"
                            title="Permalink to Logging vs String Construction">Logging vs String&nbsp;Construction</a></h1>
                 </header>
                 
@@ -187,17 +142,12 @@ emphasis placed on the ...</p>
                 Tue 17 October 2006
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>A classic logging problem in Java is&nbsp;this:</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>A classic logging problem in Java is&nbsp;this:</p>
 <div class="codehilite"><pre><span class="n">logger</span><span class="o">.</span><span class="na">finest</span><span class="o">(</span><span class="n">expensiveStringConstruction</span><span class="o">());</span>
 </pre></div>
 
@@ -210,20 +160,15 @@ emphasis placed on the ...</p>
 
 
 <p>By adding the <code>if</code> statement around the logging, the expensive string construction is only done if the message is actually going to be used ...</p>
-                <a class="readmore" href=".././logging-vs-string-construction.html">read more</a>
-                <p>There are <a href=".././logging-vs-string-construction.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../logging-vs-string-construction.html">read more</a>
+                <p>There are <a href="../logging-vs-string-construction.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././xml-vs-streams.html" rel="bookmark"
+                    <h1><a href="../xml-vs-streams.html" rel="bookmark"
                            title="Permalink to XML vs Streams"><span class="caps">XML</span> vs&nbsp;Streams</a></h1>
                 </header>
                 
@@ -233,31 +178,21 @@ emphasis placed on the ...</p>
                 Tue 26 September 2006
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>Ever get the feeling that <span class="caps">XML</span> sometimes makes things harder than they need to be? One of the problems that I and others have run into is that when parsing <span class="caps">XML</span> using <span class="caps">SAX</span> (or, in my case, using <span class="caps">JAXB</span> to unmarshall <span class="caps">XML</span>, which uses <span class="caps">SAX</span> under the hood) from an InputStream, the stream is always closed after the parsing is complete. This is surprising behaviour in Java, because you&#8217;re not supposed to close streams you don&#8217;t own. This can be a problem when <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/07/socket_xml_pitf.html">using network sockets</a> or when you want to write two or more unrelated <span class="caps">XML</span> documents ...</p>
-                <a class="readmore" href=".././xml-vs-streams.html">read more</a>
-                <p>There are <a href=".././xml-vs-streams.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>Ever get the feeling that <span class="caps">XML</span> sometimes makes things harder than they need to be? One of the problems that I and others have run into is that when parsing <span class="caps">XML</span> using <span class="caps">SAX</span> (or, in my case, using <span class="caps">JAXB</span> to unmarshall <span class="caps">XML</span>, which uses <span class="caps">SAX</span> under the hood) from an InputStream, the stream is always closed after the parsing is complete. This is surprising behaviour in Java, because you&#8217;re not supposed to close streams you don&#8217;t own. This can be a problem when <a href="http://weblogs.java.net/blog/kohsuke/archive/2005/07/socket_xml_pitf.html">using network sockets</a> or when you want to write two or more unrelated <span class="caps">XML</span> documents ...</p>
+                <a class="readmore" href="../xml-vs-streams.html">read more</a>
+                <p>There are <a href="../xml-vs-streams.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././javas-clone-mechanism-is-teh-suq.html" rel="bookmark"
+                    <h1><a href="../javas-clone-mechanism-is-teh-suq.html" rel="bookmark"
                            title="Permalink to Java’s clone mechanism is teh suq">Java&#8217;s clone mechanism is teh&nbsp;suq</a></h1>
                 </header>
                 
@@ -267,17 +202,12 @@ emphasis placed on the ...</p>
                 Mon 27 March 2006
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>Doing cloning properly in Java is way harder than it should be. I thought I knew all the traps, but recently found yet another. In a nutshell, making inner classes cloneable is almost always a bad idea. The reason is that inner classes have an internal reference to an instance of their enclosing class, which is implicitly final and can&#8217;t be changed as part of a clone. For&nbsp;example:</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>Doing cloning properly in Java is way harder than it should be. I thought I knew all the traps, but recently found yet another. In a nutshell, making inner classes cloneable is almost always a bad idea. The reason is that inner classes have an internal reference to an instance of their enclosing class, which is implicitly final and can&#8217;t be changed as part of a clone. For&nbsp;example:</p>
 <div class="codehilite"><pre><span class="kd">class</span> <span class="nc">Outer</span> <span class="kd">implements</span> <span class="n">Cloneable</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="n">Inner</span> <span class="n">inner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Inner</span><span class="o">();</span>
@@ -287,20 +217,15 @@ emphasis placed on the ...</p>
             <span class="kd">final</span> <span class="n">Outer</span> <span class="n">clone</span> <span class="o">=</span> <span class="o">(</span><span class="n">Outer</span><span class="o">)</span><span class="kd">super</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
             <span class="n">clone</span><span class="o">.</span><span class="na">inner</span> <span class="o">=</span> <span class="o">(</span><span class="n">Inner</span><span class="o">)</span><span class="n">inner</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span> <span class="c1">// A.</span>
             <span class="c1">// Cloned inner still ...</span></pre></div>
-                <a class="readmore" href=".././javas-clone-mechanism-is-teh-suq.html">read more</a>
-                <p>There are <a href=".././javas-clone-mechanism-is-teh-suq.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../javas-clone-mechanism-is-teh-suq.html">read more</a>
+                <p>There are <a href="../javas-clone-mechanism-is-teh-suq.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././handling-invocationtargetexception.html" rel="bookmark"
+                    <h1><a href="../handling-invocationtargetexception.html" rel="bookmark"
                            title="Permalink to Handling InvocationTargetException">Handling&nbsp;InvocationTargetException</a></h1>
                 </header>
                 
@@ -310,33 +235,23 @@ emphasis placed on the ...</p>
                 Fri 23 December 2005
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>A quick hint on handling <code>java.lang.reflect.InvocationTargetException</code>.</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>A quick hint on handling <code>java.lang.reflect.InvocationTargetException</code>.</p>
 <p>This sucker is thrown whenever you invoke a method via reflection (typically via <code>Method.invoke</code>), and that method throws any sort of exception. So it doesn&#8217;t indicate a problem with the reflection mechanism, it is simply how the reflection mechanism notifies you of exceptions thrown by the method you&nbsp;called.</p>
 <p>Whenever you catch this exception (and you will have to catch it at some level), the first thing you should do is call <code>getCause()</code>. This returns the exception thrown from the method that was invoked via reflection, and that&#8217;s ...</p>
-                <a class="readmore" href=".././handling-invocationtargetexception.html">read more</a>
-                <p>There are <a href=".././handling-invocationtargetexception.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../handling-invocationtargetexception.html">read more</a>
+                <p>There are <a href="../handling-invocationtargetexception.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            
+                            
 
-        
-         
-            
-            <li><article class="hentry">    
+                 
+                        <li><article class="hentry">    
                 <header>
-                    <h1><a href=".././how-not-to-catch-exceptions.html" rel="bookmark"
+                    <h1><a href="../how-not-to-catch-exceptions.html" rel="bookmark"
                            title="Permalink to How Not to Catch Exceptions">How Not to Catch&nbsp;Exceptions</a></h1>
                 </header>
                 
@@ -346,17 +261,12 @@ emphasis placed on the ...</p>
                 Fri 23 December 2005
         </abbr>
 
-        
-        <address class="vcard author">
-                By <a class="url fn" href=".././author/lachlan-odea.html">Lachlan O'Dea</a>
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
         </address>
-        
-<p>In <a href=".././category/programming.html">programming</a>. </p>
-<p>tags: <a href=".././tag/java.html">java</a><a href=".././tag/programming.html">programming</a></p>
-
-
-</footer><!-- /.post-info -->
-                <p>When it comes to bad Java practices, top of my list would have to be catching exceptions like&nbsp;this:</p>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/java.html">java</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>When it comes to bad Java practices, top of my list would have to be catching exceptions like&nbsp;this:</p>
 <div class="codehilite"><pre><span class="k">try</span> <span class="o">{</span>
    <span class="c1">// stuff - anything really</span>
 <span class="o">}</span>
@@ -367,65 +277,40 @@ emphasis placed on the ...</p>
 
 
 <p>This is usually done because the &#8220;stuff&#8221; throws more than one kind of checked exception, and the code to handle each case is the same. So what&#8217;s wrong with it? The biggest problem is that this not only catches the checked exceptions you&#8217;re interested in, but also all <code>RuntimeException</code>s. The vast majority of <code>RuntimeException</code>s are only thrown from buggy code, and catching them ...</p>
-                <a class="readmore" href=".././how-not-to-catch-exceptions.html">read more</a>
-                <p>There are <a href=".././how-not-to-catch-exceptions.html#disqus_thread">comments</a>.</p>
-                </div><!-- /.entry-content -->
+                <a class="readmore" href="../how-not-to-catch-exceptions.html">read more</a>
+                <p>There are <a href="../how-not-to-catch-exceptions.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-        
-        
-            </ol><!-- /#posts-list -->
-            
-                
-            
-            </section><!-- /#content -->
-        
-    
-
-
-        <section id="extras" class="body">
-        
-                <div class="blogroll">
+                            </ol><!-- /#posts-list -->
+                                                    </section><!-- /#content -->
+                    <section id="extras" class="body">
+                        <div class="blogroll">
                         <h2>blogroll</h2>
                         <ul>
-                        
-                            <li><a href="http://www.scala-lang.org/">Scala</a></li>
-                        
-                            <li><a href="http://java.oracle.com/">Java</a></li>
-                        
-                            <li><a href="http://www.apple.com/">Apple</a></li>
-                        
-                            <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://www.scala-lang.org/">Scala</a></li>
+                                                    <li><a href="http://www.playframework.com">Play Framework</a></li>
+                                                    <li><a href="http://java.oracle.com/">Java</a></li>
+                                                    <li><a href="http://www.apple.com/">Apple</a></li>
+                                                    <li><a href="http://www.giantitp.com/comics/oots0001.html">The Order of the Stick</a></li>
+                                                </ul>
                 </div><!-- /.blogroll -->
-        
-        
-                <div class="social">
+                                <div class="social">
                         <h2>social</h2>
                         <ul>
                             <li><a href="http://quelgar.github.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
                             
-
-                        
-                            <li><a href="http://twitter.com/quelgar">Twitter</a></li>
-                        
-                            <li><a href="https://github.com/quelgar">GitHub</a></li>
-                        
-                        </ul>
+                                                    <li><a href="http://twitter.com/quelgar">Twitter</a></li>
+                                                    <li><a href="https://github.com/quelgar">GitHub</a></li>
+                                                </ul>
                 </div><!-- /.social -->
-        
-        </section><!-- /#extras -->
+                </section><!-- /#extras -->
 
         <footer id="contentinfo" class="body">
                 <address id="about" class="vcard body">
-                Proudly powered by <a href="http://pelican.notmyidea.org/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
                 </address><!-- /#about -->
 
                 <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
         </footer><!-- /#contentinfo -->
-
-
-
 
 <script type="text/javascript">
     var disqus_shortname = 'wisdom-eludes-me';
@@ -436,6 +321,5 @@ emphasis placed on the ...</p>
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
-
 </body>
 </html>
