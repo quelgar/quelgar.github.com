@@ -31,8 +31,178 @@
 
                             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="../deploying-a-play-application-on-ubuntu.html">Deploying a Play Application on&nbsp;Ubuntu</a></h1> 
+                    <h1 class="entry-title"><a href="../de-suckifying-the-javaneturi-api-with-asymmetric-lenses.html">De-suckifying the java.net.<span class="caps">URI</span> <span class="caps">API</span> with Asymmetric&nbsp;Lenses</a></h1> 
                     <footer class="post-info">
+        <abbr class="published" title="2013-07-03T00:00:00">
+                Wed 03 July 2013
+        </abbr>
+
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info --><p>I find I&#8217;m using the <code>java.net.URI</code> class quite a bit these days. It has two good features: first, it follows the relevant RFCs to the letter; and second, it&#8217;s&nbsp;immutable.</p>
+<p>The downside of this class is the <span class="caps">API</span> - it&#8217;s very, well, <em>Java</em>. Actually, it&#8217;s bad even by contemporary Java standards. Lets say we wanted to add an argument to the query string of an existing <span class="caps">URI</span>. Here&#8217;s how you might do it in Java (transliterated to&nbsp;Scala):</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">addQueryArgJava</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">origQuery</span> <span class="k">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">getQuery</span> <span class="n">eq</span> <span class="kc">null</span><span class="o">)</span> <span class="s">&quot;&quot;</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">getQuery</span> <span class="o">+</span> <span class="sc">&#39;&amp;&#39;</span>
+  <span class="k">new</span> <span class="nc"><span class="caps">URI</span></span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">getScheme</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getAuthority</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getPath</span><span class="o">,</span> <span class="n">origQuery</span> <span class="o">+</span> <span class="s">&quot;foo=bar&quot;</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getFragment</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Ugh, <em>that&#8217;s</em> going to get old fast. And of course, this primitive string appending probably won&#8217;t do what you want if the original <span class="caps">URI</span> already had a &#8220;foo&#8221;&nbsp;argument.</p>
+<p>If we were to implement <span class="caps">URI</span> in Scala, we&#8217;d probably use a case class, in which case the compiler would give us a free <code>copy</code> method to help out with this kind of thing. But we can add a <code>copy</code> method to <code>java.net.URI</code> without too much trouble. Let&#8217;s do away with all the null and -1 unpleasantness while we&#8217;re at&nbsp;it:</p>
+<div class="codehilite"><pre><span class="k">import</span> <span class="nn">java.net.<span class="caps">URI</span></span>
+
+<span class="k">implicit</span> <span class="k">final</span> <span class="k">class</span> <span class="nc">RichURI</span><span class="o">(</span><span class="k">val</span> <span class="n">uri</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span> <span class="k">extends</span> <span class="nc">AnyVal</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">scheme</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getScheme</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">userInfo</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getUserInfo</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">host</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getHost</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">port</span> <span class="k">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getPort</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="nc">None</span> <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getPort</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">path</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getPath</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">query</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getQuery</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">fragment</span> <span class="k">=</span> <span class="nc">Option</span><span class="o">(</span><span class="n">uri</span><span class="o">.</span><span class="n">getFragment</span><span class="o">)</span>
+  <span class="k">def</span> <span class="n">copy</span><span class="o">(</span><span class="n">scheme</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">scheme</span><span class="o">,</span>
+           <span class="n">userInfo</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">userInfo</span><span class="o">,</span>
+           <span class="n">host</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">host</span><span class="o">,</span>
+           <span class="n">port</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">port</span><span class="o">,</span>
+           <span class="n">path</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">path</span><span class="o">,</span>
+           <span class="n">query</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">query</span><span class="o">,</span>
+           <span class="n">fragment</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">fragment</span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="k">new</span> <span class="nc"><span class="caps">URI</span></span><span class="o">(</span>
+    <span class="n">scheme</span><span class="o">.</span><span class="n">orNull</span><span class="o">,</span>
+    <span class="n">userInfo</span><span class="o">.</span><span class="n">orNull</span><span class="o">,</span>
+    <span class="n">host</span><span class="o">.</span><span class="n">orNull</span><span class="o">,</span>
+    <span class="n">port</span> <span class="n">getOrElse</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">orNull</span><span class="o">,</span>
+    <span class="n">query</span><span class="o">.</span><span class="n">orNull</span><span class="o">,</span>
+    <span class="n">fragment</span><span class="o">.</span><span class="n">orNull</span>
+  <span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">assert</span><span class="o">(</span><span class="nc"><span class="caps">URI</span></span><span class="o">.</span><span class="n">create</span><span class="o">(</span><span class="s">&quot;http://www.google.com/&quot;</span><span class="o">).</span><span class="n">copy</span><span class="o">(</span><span class="n">scheme</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;ftp&quot;</span><span class="o">))</span> <span class="o">==</span> <span class="nc"><span class="caps">URI</span></span><span class="o">.</span><span class="n">create</span><span class="o">(</span><span class="s">&quot;ftp://www.google.com/&quot;</span><span class="o">))</span>
+</pre></div>
+
+
+<p>The code to add the query argument is&nbsp;now:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">addQueryArgCopy</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">u</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">query</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">((</span><span class="n">u</span><span class="o">.</span><span class="n">query</span> <span class="n">map</span> <span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="sc">&#39;&amp;&#39;</span><span class="o">)</span> <span class="n">getOrElse</span> <span class="s">&quot;&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;foo=bar&quot;</span> <span class="o">))</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Less boilerplate, but still not great. There&#8217;s many ways we&#8217;re could improve on this, but I&#8217;m going to focus on what I think is the best tool for this job: <em>asymmetric lenses</em>.</p>
+<p>A Java programmer could intuitively think of an asymmetric lens as the functional programming version of a bean property, without the mutability nightmares. A Scala programmer could think of it as a scalable version of the <code>copy</code> method. An asymmetric lens is basically a means to work with fields within immutable records. I&#8217;m using the terms &#8220;field&#8221; and &#8220;record&#8221; in a very general sense, the &#8220;field&#8221; could be a particular key in a &#8220;record&#8221; that is dictionary map, for example. A lens reifies the mechanics of reading a writing a field into a <em>composable</em> value. As I will attempt to demonstrate, it is the composability of lenses that makes them so&nbsp;powerful.</p>
+<p>In the post I&#8217;m just going to cover how lenses can help us with a particular example problem. For more details on what they are and how they work, I highly recommend <a href="http://days2012.scala-lang.org/sites/days2012/files/morris_lenses.pdf">this paper</a> by Tony Morris. It uses Scala and is very easy to follow. All the code from this post, as well as the lens implementation it uses can be found in <a href="https://gist.github.com/quelgar/5819633">this gist</a>.</p>
+<p>Defining a lens is pretty straight-forward: you provide a function to read the relevant field, and a function to set the field. As we&#8217;re talking about immutable records, &#8220;setting&#8221; a field means returning a new record which has the new value for the field. Unfortunately, this step tends to require a lot of boilerplate in plain Scala. But as we&#8217;ll see, you at least only need to do the boilerplate once. There has been some work done to automate much of the boilerplate via compiler plugins or macros, but I haven&#8217;t tried these out&nbsp;yet.</p>
+<p>So lets define some lenses for the fields of the <code>java.net.URI</code> class. I&#8217;m calling the type of my asymmetric lens <code>@&gt;</code> as I think it looks quite nice with infix notation. You read it as &#8220;record_type @&gt;&nbsp;field_type&#8221;:</p>
+<div class="codehilite"><pre><span class="k">object</span> <span class="nc">lens</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">scheme</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">scheme</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">scheme</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">userInfo</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">userInfo</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">userInfo</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">host</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">host</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">host</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">port</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">port</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">port</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">pathString</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">path</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">path</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">queryString</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">query</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">query</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+  <span class="k">val</span> <span class="n">fragment</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">fragment</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">fragment</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>This is using the <code>copy</code> method listed above. As I said, this very boilerplatey, but now we&#8217;ll never have call the <code>copy</code> method ever again. The <code>Lens</code> constructor takes two arguments: the first is simply a function to return the field value given an instance of the record, and the second is a curried function taking a field value and a record value, and producing a new record value. All of these particular lenses return an optional value, simply because each element of a <span class="caps">URI</span> is optional (an empty string is a valid&nbsp;<span class="caps">URI</span>!).</p>
+<p>So here&#8217;s how we&#8217;d use a lens to add to the query&nbsp;string:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">addQueryArgLensString</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">lens</span><span class="o">.</span><span class="n">queryString</span><span class="o">.</span><span class="n">modify</span><span class="o">(</span><span class="n">u</span><span class="o">)(</span><span class="n">x</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">((</span><span class="n">x</span> <span class="n">map</span> <span class="o">(</span><span class="k">_</span> <span class="o">+</span> <span class="sc">&#39;&amp;&#39;</span><span class="o">)</span> <span class="n">getOrElse</span> <span class="s">&quot;&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;foo=bar&quot;</span><span class="o">))</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Hmm, not really an improvement over the copy method, is it? But we can do better. Let&#8217;s make another lens for the query string, but this time we&#8217;ll parse the query string to make a <code>URI @&gt; Map[String, String]</code>:</p>
+<div class="codehilite"><pre><span class="c1">// note - not production quality parsing</span>
+<span class="k">private</span> <span class="k">val</span> <span class="n">regex</span> <span class="k">=</span> <span class="s">&quot;&quot;&quot;([^=&amp;]+)=([^&amp;]+)&amp;?&quot;&quot;&quot;</span><span class="o">.</span><span class="n">r</span>
+<span class="k">def</span> <span class="n">parse</span><span class="o">(</span><span class="n">queryString</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">queryString</span> <span class="n">map</span> <span class="o">{</span> <span class="n">q</span> <span class="k">=&gt;</span>
+  <span class="o">(</span><span class="n">regex</span><span class="o">.</span><span class="n">findAllMatchIn</span><span class="o">(</span><span class="n">q</span><span class="o">)</span> <span class="n">map</span> <span class="o">(</span><span class="n">m</span> <span class="k">=&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="o">(</span><span class="mi">2</span><span class="o">))).</span><span class="n">toMap</span>
+<span class="o">}</span> <span class="n">getOrElse</span> <span class="nc">Map</span><span class="o">.</span><span class="n">empty</span>
+<span class="k">def</span> <span class="n">toQueryString</span><span class="o">(</span><span class="n">pairs</span><span class="k">:</span> <span class="kt">Iterable</span><span class="o">[(</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">)])</span> <span class="k">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">pairs</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="nc">None</span> <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">pairs</span> <span class="n">map</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span><span class="s">&quot;$k=$v&quot;</span>
+<span class="o">}</span> <span class="n">mkString</span> <span class="s">&quot;&amp;&quot;</span><span class="o">)</span>
+
+<span class="k">object</span> <span class="nc">lens</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">query</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="kt">@&gt;</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span>
+    <span class="n">r</span> <span class="k">=&gt;</span> <span class="n">parse</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="n">query</span><span class="o">),</span>
+    <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">query</span> <span class="k">=</span> <span class="n">toQueryString</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+  <span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>How does this help? Well, we can also define a lens that will &#8220;focus&#8221; on a given key of any <code>Map</code>:</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">mapLens</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">]</span> <span class="o">@&gt;</span> <span class="nc">Option</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Lens</span><span class="o">(</span>
+  <span class="k">_</span> <span class="n">get</span> <span class="n">key</span><span class="o">,</span>
+  <span class="k">_</span> <span class="n">map</span> <span class="o">(</span><span class="n">v</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="k">_:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">])</span> <span class="o">+</span> <span class="o">(</span><span class="n">key</span> <span class="o">-&gt;</span> <span class="n">v</span><span class="o">))</span> <span class="n">getOrElse</span> <span class="o">(</span><span class="k">_</span> <span class="o">-</span> <span class="n">key</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+
+<p>And then we compose these two lenses, to focus not just on the query string, but the &#8220;foo&#8221; argument within the query string (I have written compose as <code>&gt;=&gt;</code>):</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">addQueryArgLens</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">lens</span><span class="o">.</span><span class="n">query</span> <span class="o">&gt;=&gt;</span> <span class="n">mapLens</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">)</span> <span class="n">set</span> <span class="o">(</span><span class="n">u</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">))</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>This avoids having to manipulate strings or manually copy objects, and if the query string already has a &#8220;foo&#8221; argument, its value will simply be replaced. Let&#8217;s do the comparison for removing a query string&nbsp;argument:</p>
+<div class="codehilite"><pre><span class="cm">/**</span>
+<span class="cm"> * Java version of removing query argument &quot;foo&quot;, if it is present.</span>
+<span class="cm"> */</span>
+<span class="k">def</span> <span class="n">removeFooArgJava</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">re</span> <span class="k">=</span> <span class="s">&quot;foo=([^&amp;]+)&amp;?&quot;</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">pattern</span>
+  <span class="k">val</span> <span class="n">matcher</span> <span class="k">=</span> <span class="n">re</span><span class="o">.</span><span class="n">matcher</span><span class="o">(</span><span class="k">if</span> <span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">getQuery</span> <span class="n">eq</span> <span class="kc">null</span><span class="o">)</span> <span class="s">&quot;&quot;</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">getQuery</span><span class="o">)</span>
+  <span class="k">val</span> <span class="n">newQuery</span> <span class="k">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">replaceFirst</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+  <span class="k">new</span> <span class="nc"><span class="caps">URI</span></span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">getScheme</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getAuthority</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getPath</span><span class="o">,</span> <span class="k">if</span> <span class="o">(</span><span class="n">newQuery</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="kc">null</span> <span class="k">else</span> <span class="n">newQuery</span><span class="o">,</span> <span class="n">u</span><span class="o">.</span><span class="n">getFragment</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">def</span> <span class="n">removeFooArgLens</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">lens</span><span class="o">.</span><span class="n">query</span> <span class="o">&gt;=&gt;</span> <span class="n">mapLens</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">)</span> <span class="n">set</span> <span class="o">(</span><span class="n">u</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>And naturally, this new &#8220;foo&#8221; lens can be composed with others. So if, say, the <span class="caps">URI</span> was the field of some other case class, all you have to do is define a lens for that field and then compose it with whatever you need, for&nbsp;example:</p>
+<div class="codehilite"><pre><span class="k">final</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">Example</span><span class="o">(</span><span class="n">href</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">,</span>
+  <span class="c1">// more fields</span>
+<span class="o">)</span>
+
+<span class="k">val</span> <span class="n">hrefLens</span><span class="k">:</span> <span class="kt">Example</span> <span class="kt">@&gt;</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="nc">Lens</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">href</span><span class="o">,</span> <span class="n">v</span> <span class="k">=&gt;</span> <span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">href</span> <span class="k">=</span> <span class="n">v</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">example</span> <span class="k">=</span> <span class="nc">Example</span><span class="o">(</span><span class="k">new</span> <span class="nc"><span class="caps">URI</span></span><span class="o">(</span><span class="s">&quot;…&quot;</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">exampleWithFoo</span><span class="k">:</span> <span class="kt">Example</span> <span class="o">=</span> <span class="n">hrefLens</span> <span class="o">&gt;=&gt;</span> <span class="n">lens</span><span class="o">.</span><span class="n">query</span> <span class="o">&gt;=&gt;</span> <span class="n">mapLens</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">)</span> <span class="n">set</span> <span class="o">(</span><span class="n">u</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">))</span>
+</pre></div>
+
+
+<p>I really hope the Scala team can one day include lenses in the Scala standard library. Scala&#8217;s motto is &#8220;a Scalable language&#8221;. Well, the <code>copy</code> method definitely doesn&#8217;t scale&nbsp;well:</p>
+<div class="codehilite"><pre><span class="k">val</span> <span class="n">exampleWithFoo</span><span class="k">:</span> <span class="kt">Example</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">href</span> <span class="k">=</span> <span class="n">example</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span>
+  <span class="n">query</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">toQueryString</span><span class="o">(</span><span class="n">parse</span><span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">query</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="s">&quot;foo&quot;</span> <span class="o">-&gt;</span> <span class="s">&quot;bar&quot;</span><span class="o">)))</span>
+<span class="o">))</span>
+</pre></div>
+
+
+<p>And in real code, record/field hierarchies can get a lot more complex than&nbsp;this.</p>
+<p>There&#8217;s more cool stuff that can be done with lenses. A <em>partial</em> asymmetric lens can be convenient for manipulating values that may be absent. And lenses work really well with the state monad. See the above referenced <a href="http://days2012.scala-lang.org/sites/days2012/files/morris_lenses.pdf">paper</a> for&nbsp;details.</p><p>There are <a href="../de-suckifying-the-javaneturi-api-with-asymmetric-lenses.html#disqus_thread">comments</a>.</p>                </article>
+                            </aside><!-- /#featured -->
+                            <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+                                                
+
+                 
+                        <li><article class="hentry">    
+                <header>
+                    <h1><a href="../deploying-a-play-application-on-ubuntu.html" rel="bookmark"
+                           title="Permalink to Deploying a Play Application on Ubuntu">Deploying a Play Application on&nbsp;Ubuntu</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
         <abbr class="published" title="2013-03-28T00:00:00">
                 Thu 28 March 2013
         </abbr>
@@ -42,95 +212,12 @@
         </address>
         <p>In <a href="../category/programming.html">programming</a>. </p>
 <p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a><a href="../tag/play.html">play</a></p>
-</footer><!-- /.post-info --><p>The more I use the <a href="http://www.playframework.com">Play Web Framework</a>, the more I like it. The &#8220;dev mode&#8221; is great, compiling everything that&#8217;s changed on the fly, including the statically checked routes and templates. But sooner or later we want to deploy our app for&nbsp;reals.</p>
-<p>The <code>dist</code> target will package up your app into a zip file with a simple shell script to launch it. That&#8217;s fine as far as it goes, but of course I want to run it as a proper service that starts automatically when the machine boots and can be easily shutdown and restarted. My production <span class="caps">OS</span> of choice is Ubuntu. Let&#8217;s do&nbsp;this.</p>
-<h1>Upstart</h1>
-<p>I only learned about <a href="http://upstart.ubuntu.com">Upstart</a> recently while researching this problem. It&#8217;s essentially an improved version of the traditional System V init system. This discovery made me very glad I chose Ubuntu, as Upstart is both powerful and remarkably simple to use once you know the basics. The <a href="http://upstart.ubuntu.com/cookbook/">Upstart &#8220;cookbook&#8221;</a> might look a bit intimidating at first, but after a bit of playing around I found it was quite simple to do what I&nbsp;wanted.</p>
-<p>By the way, Ubuntu still has the traditional System V init thing as well. I was happily using that for ages without any idea that it had a whole other more advanced init system controlling it. This is because Debian still uses the System V init by default, so all Debian packages use System V, and Ubuntu doesn&#8217;t want to re-do all that&nbsp;work.</p>
-<h1>Steps</h1>
-<p>This is how I got my Play server running with Upstart. This was all done on Ubuntu 12.10 and seems to be working well so far. Obviously, there are a number of choices I&#8217;ve made that could be made differently, so this is not the only way to do&nbsp;it.</p>
-<h2>1. System user for&nbsp;Play</h2>
-<p>I wanted a user dedicated to running Play servers.&nbsp;Easy:</p>
-<div class="codehilite"><pre><span class="gp">$</span> sudo adduser --system play
-</pre></div>
-
-
-<h2>2. Unzip your Play&nbsp;app</h2>
-<p>Just unzip your Play app somewhere. For this explanation, I&#8217;m going to assume it&#8217;s unzipped to <code>/play/myapp-1.0</code>.</p>
-<p>The <code>play</code> user will need to be able to write to the app&#8217;s&nbsp;directories:</p>
-<div class="codehilite"><pre><span class="gp">$</span> sudo chown -R play:adm /play/myapp-1.0
-</pre></div>
-
-
-<h2>3. Create an Upstart configuration&nbsp;file</h2>
-<p>All Upstart &#8220;jobs&#8221; are defined by a file in <code>/etc/init</code> named <code>jobname.conf</code>. The &#8220;jobname&#8221; bit is what you call the job when starting it or checking its status or whatever. So let&#8217;s create a file <code>/etc/init/myapp.conf</code> as&nbsp;follows:</p>
-<div class="codehilite"><pre># Upstart configuration for myapp Play application
-
-description &quot;Magellan Config Server&quot;
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-setuid play
-
-console log
-
-env PLAY_DIR=/play/myapp-1.0
-env JAVA_HOME=/usr/lib/jvm/jre1.7.0_17
-
-exec $JAVA_HOME/bin/java -Dhttp.port=9001 -classpath $PLAY_DIR/lib/\* play.core.server.NettyServer $PLAY_DIR
-</pre></div>
-
-
-<p>All this stuff (known as <em>stanzas</em>) is described in the above mentioned Upstart cookbook, but I&#8217;ll go through it&nbsp;briefly.</p>
-<p>The <code>start on</code>/<code>stop on</code> lines indicate that these actions are triggered by changes in the system&#8217;s runlevel. Upstart uses runlevels just like System V, and on Ubuntu levels 2 through 5 are all the same. There are many events that can be used to trigger start and stop, but for a standalone daemon process, these do the&nbsp;job.</p>
-<p>The <code>setuid</code> stanza means the job will be executed as the specified user instead of root. This seems like a simple thing, but you&#8217;d be amazed how fiddly it can be to do this via traditional means if you need to pass environment variables&nbsp;through.</p>
-<p>The <code>console log</code> stanza means that stdout and stderr are redirected to <code>/var/log/upstart/myapp.log</code>. This was useful when debugging why my job wasn&#8217;t starting. I&#8217;m going to change it to <code>console none</code> on my server as I no longer need this&nbsp;log.</p>
-<p>I&#8217;m just using the <code>env</code> stanzas to break out the path settings. There&#8217;s seems to be a whole lot more they can be used for in Upstart, but I haven&#8217;t needed to worry about that&nbsp;yet.</p>
-<p>The <code>exec</code> stanza specifies the command to run to run the job. This is basically the command from the <code>start</code> script that Play provides for us. I&#8217;ve just replaced the explicit listing of all the jars with the newer classpath wildcard feature, and specified the port for Play to&nbsp;use.</p>
-<h2>4. Start&nbsp;it</h2>
-<p>Upstart jobs are controlled by the <code>initctl</code> command. But there are various alias commands to save some typing. For example, <code>sudo start foo</code> is the same as <code>sudo initctl start foo</code>. So, let&#8217;s start our Play&nbsp;app:</p>
-<div class="codehilite"><pre><span class="gp">$</span> sudo start myapp
-</pre></div>
-
-
-<p>Hopefully, you&#8217;ll be rewarded&nbsp;with:</p>
-<div class="codehilite"><pre>myapp start/running, process 1234
-</pre></div>
-
-
-<p>You can confirm&nbsp;with:</p>
-<div class="codehilite"><pre><span class="gp">$</span> ps -p 1234
-</pre></div>
-
-
-<p>If something went wrong, check <code>/var/log/upstart/myapp.log</code> for&nbsp;clues.</p>
-<p>Some other&nbsp;commands:</p>
-<div class="codehilite"><pre><span class="gp">$</span> sudo status myapp
-<span class="gp">$</span> sudo stop myapp
-<span class="gp">$</span> sudo restart myapp
-<span class="gp">$</span> sudo initctl list  <span class="c"># list all Upstart jobs</span>
-</pre></div>
-
-
-<h1>Port&nbsp;80</h1>
-<p>Of course, we like our <span class="caps">HTTP</span> servers to use port 80 (and or 443). There are a few ways this can be arranged, here&#8217;s the ones I know&nbsp;of:</p>
-<ul>
-<li>Run as root (don&#8217;t do&nbsp;this)</li>
-<li>Redirect port 80 using the&nbsp;firewall</li>
-<li>Use <a href="http://en.wikipedia.org/wiki/Authbind">authbind(1)</a></li>
-<li>Use a <span class="caps">HTTP</span> reverse proxy. I&#8217;m experimenting with <a href="http://nginx.org">nginx</a></li>
-</ul>
-<p>I&#8217;ve used authbind, it&#8217;s pretty straight-forward and works with the <span class="caps">JVM</span>. It&#8217;s good when you just have a single server that you want on port&nbsp;80/443.</p>
-<p>As Play apps run standalone with their own embedded Netty web server, an <span class="caps">HTTP</span> reverse proxy seems like it will prove quite useful. If you have a bunch of Play apps using different ports, you can use the proxy to make them all appear as part of a single &#8220;server&#8221; on port 80 (distinguished by something like a path in the <span class="caps">URL</span> or by the <span class="caps">HTTP</span> &#8220;host&#8221; header). Nginx (pronounced &#8220;Engine-X&#8221;) can also do simple load balancing, which should allow us to leverage Play&#8217;s stateless style. I&#8217;m still experimenting with these features at this&nbsp;stage.</p>
-<h1>Conclusion</h1>
-<p>I was pleasantly surprised at how easy it was to get my Play app up and running as an Ubuntu service. I had to spend some time learning Upstart, but it was well worth it. Upstart takes care housekeeping such as tracking the service&#8217;s <span class="caps">PID</span> for you. Compare the short configuration file above to the System V script included with Ubuntu&#8217;s Tomcat 7 package, which weighs in at 296&nbsp;lines!</p><p>There are <a href="../deploying-a-play-application-on-ubuntu.html#disqus_thread">comments</a>.</p>                </article>
-                            </aside><!-- /#featured -->
-                            <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
-                                                
+</footer><!-- /.post-info -->                <p>The more I use the <a href="http://www.playframework.com">Play Web Framework</a>, the more I like it. The &#8220;dev mode&#8221; is great, compiling everything that&#8217;s changed on the fly, including the statically checked routes and templates. But sooner or later we want to deploy our app for&nbsp;reals.</p>
+<p>The <code>dist</code> target will package up your app into a zip file with a simple shell script to launch it. That&#8217;s fine as far as it goes, but of course I want to run it as a proper service that starts automatically when the machine boots and can be easily shutdown and restarted. My ...</p>
+                <a class="readmore" href="../deploying-a-play-application-on-ubuntu.html">read more</a>
+                <p>There are <a href="../deploying-a-play-application-on-ubuntu.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+                            
 
                  
                         <li><article class="hentry">    

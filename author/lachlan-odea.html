@@ -300,6 +300,34 @@ There are other utility methods that could be&nbsp;added:</p>
                  
                         <li><article class="hentry">    
                 <header>
+                    <h1><a href="../de-suckifying-the-javaneturi-api-with-asymmetric-lenses.html" rel="bookmark"
+                           title="Permalink to De-suckifying the java.net.URI API with Asymmetric Lenses">De-suckifying the java.net.<span class="caps">URI</span> <span class="caps">API</span> with Asymmetric&nbsp;Lenses</a></h1>
+                </header>
+                
+                <div class="entry-content">
+                <footer class="post-info">
+        <abbr class="published" title="2013-07-03T00:00:00">
+                Wed 03 July 2013
+        </abbr>
+
+                <address class="vcard author">
+                By <a class="url fn" href="../author/lachlan-odea.html">Lachlan O'Dea</a>
+        </address>
+        <p>In <a href="../category/programming.html">programming</a>. </p>
+<p>tags: <a href="../tag/scala.html">scala</a><a href="../tag/programming.html">programming</a></p>
+</footer><!-- /.post-info -->                <p>I find I&#8217;m using the <code>java.net.URI</code> class quite a bit these days. It has two good features: first, it follows the relevant RFCs to the letter; and second, it&#8217;s&nbsp;immutable.</p>
+<p>The downside of this class is the <span class="caps">API</span> - it&#8217;s very, well, <em>Java</em>. Actually, it&#8217;s bad even by contemporary Java standards. Lets say we wanted to add an argument to the query string of an existing <span class="caps">URI</span>. Here&#8217;s how you might do it in Java (transliterated to&nbsp;Scala):</p>
+<div class="codehilite"><pre><span class="k">def</span> <span class="n">addQueryArgJava</span><span class="o">(</span><span class="n">u</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span><span class="o">)</span><span class="k">:</span> <span class="kt"><span class="caps">URI</span></span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">origQuery</span> <span class="k">=</span> <span class="k">if</span> <span class="o">(</span><span class="n">u</span><span class="o">.</span><span class="n">getQuery</span> <span class="n">eq</span> <span class="kc">null</span><span class="o">)</span> <span class="s">&quot;&quot;</span> <span class="k">else</span> <span class="n">u</span><span class="o">.</span><span class="n">getQuery</span> <span class="o">+</span> <span class="sc">&#39;&amp;&#39;</span>
+  <span class="k">new ...</span></pre></div>
+                <a class="readmore" href="../de-suckifying-the-javaneturi-api-with-asymmetric-lenses.html">read more</a>
+                <p>There are <a href="../de-suckifying-the-javaneturi-api-with-asymmetric-lenses.html#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+                            
+
+                 
+                        <li><article class="hentry">    
+                <header>
                     <h1><a href="../deploying-a-play-application-on-ubuntu.html" rel="bookmark"
                            title="Permalink to Deploying a Play Application on Ubuntu">Deploying a Play Application on&nbsp;Ubuntu</a></h1>
                 </header>
